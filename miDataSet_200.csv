@@ -1,0 +1,2509 @@
+id,dificultad,tema,enunciado,input_desc,output_desc,restricciones,ejemplo_entrada,ejemplo_salida,codigo,explicacion,tiempo,memoria
+ex_0001,intermedio,arrays,"Dado un arreglo de enteros y un valor objetivo, determina los índices de dos elementos distintos cuya suma sea igual al valor objetivo. Se garantiza que existe exactamente una solución válida.",Un arreglo de enteros y un valor entero objetivo,Dos índices de elementos distintos cuya suma sea igual al objetivo,2 ? longitud del arreglo ? 10 000Los valores pueden ser negativosExiste exactamente una solución,"nums = [2,7,11,15]target = 9","[0,1]","def two_sum(nums, target):    seen = {}    for i, x in enumerate(nums):        need = target - x        if need in seen:            return [seen[need], i]        seen[x] = i","Se recorre el arreglo manteniendo un registro de los valores ya vistos. Para cada elemento, se verifica si el valor necesario para alcanzar la suma objetivo ya fue encontrado previamente.",O(n),O(n)
+ex_0002,intermedio,linked_list,"Se reciben dos listas enlazadas no vacías que representan números enteros no negativos. Cada nodo contiene un solo dígito y los dígitos están almacenados en orden inverso.Calcula la suma de ambos números y devuelve el resultado como una nueva lista enlazada, manteniendo el mismo formato.","Dos listas enlazadas que representan números enteros no negativos, con un dígito por nodo en orden inverso.","Una lista enlazada que representa la suma de ambos números, usando el mismo formato.",Cada lista contiene entre 1 y 100 nodosCada nodo contiene un valor entre 0 y 9Los números no tienen ceros a la izquierda,"[2,4,3]  & [5,6,4]","[7,0,8]","class ListNode:    def __init__(self, val=0, next=None):        self.val = val        self.next = nextdef add_two_numbers(l1, l2):    dummy = ListNode()    curr = dummy    carry = 0    while l1 or l2 or carry:        v1 = l1.val if l1 else 0        v2 = l2.val if l2 else 0        total = v1 + v2 + carry        carry = total // 10        curr.next = ListNode(total % 10)        curr = curr.next        if l1:            l1 = l1.next        if l2:            l2 = l2.next    return dummy.next",Se recorren ambas listas simultáneamente sumando los dígitos correspondientes junto con un acarreo. El resultado de cada suma se guarda en un nuevo nodo y el proceso continúa hasta procesar todos los dígitos y el acarreo final.,O(n),O(n)
+ex_0003,intermedio,sliding_window,"Dada una cadena s, encuentra la longitud máxima de una subcadena contigua que no contenga caracteres repetidos.","Una cadena de longitud variable que puede contener letras, dígitos, espacios y símbolos.",Un entero que representa la longitud de la subcadena contigua más larga sin caracteres repetidos.,0 ? longitud de la cadena ? 50 000La cadena puede incluir espacios y símbolosLa respuesta debe corresponder a una subcadena contigua,"s = ""abcabcbb""",3,"def length_of_longest_substring(s: str) -> int:    last = {}    left = 0    best = 0    for right, ch in enumerate(s):        if ch in last and last[ch] >= left:            left = last[ch] + 1        last[ch] = right        curr = right - left + 1        if curr > best:            best = curr    return best","Se mantiene una ventana [left, right] sin repetidos. Al avanzar right, si el carácter actual ya apareció dentro de la ventana, se mueve left a la posición siguiente de su última aparición. En cada paso se actualiza el tamaño máximo.o",O(n),"O(min(n,alfabeto))"
+ex_0004,dificil,binary_search,Se te dan dos arreglos ordenados de enteros. Calcula la mediana del conjunto formado por todos los elementos de ambos arreglos sin construir explícitamente el arreglo combinado.,Dos arreglos de enteros ordenados de forma no decreciente.,Un número real que representa la mediana del conjunto total de elementos.,1 ? m + n ? 2000Los arreglos ya vienen ordenadosPuede haber arreglos vacíos,"nums1 = [1,2]nums2 = [3,4]",2.5,"def median_two_sorted(nums1, nums2):    # Asegura que nums1 sea el arreglo más pequeño    if len(nums1) > len(nums2):        nums1, nums2 = nums2, nums1    m, n = len(nums1), len(nums2)    total_left = (m + n + 1) // 2    lo, hi = 0, m    while lo <= hi:        i = (lo + hi) // 2        j = total_left - i        left1 = nums1[i - 1] if i > 0 else float(""-inf"")        right1 = nums1[i] if i < m else float(""inf"")        left2 = nums2[j - 1] if j > 0 else float(""-inf"")        right2 = nums2[j] if j < n else float(""inf"")        if left1 <= right2 and left2 <= right1:            if (m + n) % 2 == 1:                return float(max(left1, left2))            return (max(left1, left2) + min(right1, right2)) / 2.0        elif left1 > right2:            hi = i - 1        else:            lo = i + 1    raise ValueError(""Entrada inválida"")",Se busca una partición entre ambos arreglos tal que la cantidad de elementos a la izquierda sea la mitad del total y todos los elementos de la izquierda sean menores o iguales que los de la derecha. La mediana se obtiene a partir de los extremos de esa partición.,"O(log(min(m, n)))",O(1)
+ex_0005,intermedio,strings,"Dada una cadena s, encuentra una subcadena contigua de longitud máxima que se lea igual de izquierda a derecha que de derecha a izquierda. Si existen varias con la misma longitud máxima, puedes devolver cualquiera.",Una cadena de caracteres alfanuméricos.,Una subcadena contigua de s con la máxima longitud posible que sea simétrica al leerla en ambos sentidos.,"1 ? longitud de la cadena ? 1000La cadena contiene letras y dígitosSi hay varias respuestas válidas, se acepta cualquiera","s = ""babad""",bab,"def longest_palindrome(s: str) -> str:    if not s:        return """"    best_l = 0    best_r = 0  # inclusive    def expand(l: int, r: int):        while l >= 0 and r < len(s) and s[l] == s[r]:            l -= 1            r += 1        return l + 1, r - 1    for i in range(len(s)):        l1, r1 = expand(i, i)       # centro impar        l2, r2 = expand(i, i + 1)   # centro par        if r1 - l1 > best_r - best_l:            best_l, best_r = l1, r1        if r2 - l2 > best_r - best_l:            best_l, best_r = l2, r2    return s[best_l:best_r + 1]",Se prueba cada posición como posible centro de un palíndromo (centro único y centro doble) y se expande hacia afuera mientras los caracteres coincidan. Se guarda el palíndromo más largo encontrado.,O(n^2),O(1)
+ex_0006,dificil,strings,"Dada una cadena s, encuentra una subcadena contigua de longitud máxima que se lea igual de izquierda a derecha que de derecha a izquierda. Tu solución debe ejecutarse en tiempo lineal respecto a la longitud de la cadena.",Una cadena de caracteres alfanuméricos.,Una subcadena contigua de s con la máxima longitud posible que sea simétrica al leerla en ambos sentidos.,1 ? longitud de la cadena ? 100 000La cadena contiene letras y dígitosLa solución debe ejecutarse en tiempo O(n),"s = ""cbbd""",bb,"def longest_palindrome_linear(s: str) -> str:    if not s:        return """"    # Transformación para manejar palíndromos pares/impares uniformemente:    # ""abba"" -> ""^#a#b#b#a#$""    t = [""^""]    for ch in s:        t.append(""#"")        t.append(ch)    t.append(""#"")    t.append(""$"")    t = """".join(t)    p = [0] * len(t)    center = 0    right = 0    for i in range(1, len(t) - 1):        mirror = 2 * center - i        if i < right:            p[i] = min(right - i, p[mirror])        # Expandir alrededor de i        while t[i + 1 + p[i]] == t[i - 1 - p[i]]:            p[i] += 1        # Actualizar centro y frontera derecha        if i + p[i] > right:            center = i            right = i + p[i]    # Extraer el palíndromo más largo    max_len = 0    max_center = 0    for i in range(1, len(t) - 1):        if p[i] > max_len:            max_len = p[i]            max_center = i    start = (max_center - max_len) // 2    return s[start:start + max_len]","Se transforma la cadena para unificar palíndromos pares e impares y se calcula, para cada centro, el radio del palíndromo máximo usando información previa (simetría respecto al centro actual). Esto permite encontrar el palíndromo más largo en tiempo lineal.",O(n),O(n)
+ex_0007,intermedio,strings,"Dada una cadena s y un entero k, escribe los caracteres de s recorriendo filas de 0 a k?1 y luego de k?2 a 1 repetidamente (como un vaivén). Después, construye una nueva cadena concatenando el contenido de cada fila en orden de 0 a k?1.",Una cadena de caracteres y un entero k que indica el número de filas.,Una cadena resultante de concatenar las filas construidas por el recorrido en vaivén.,1 ? longitud de la cadena ? 10001 ? k ? 1000La cadena puede contener letras mayúsculas/minúsculas y algunos signos,"s = ""PAYPALISHIRING"", k = 3","""PAHNAPLSIIGYIR""","def zigzag_convert(s: str, k: int) -> str:    if k <= 1 or k >= len(s):        return s    rows = [""""] * k    r = 0    step = 1  # +1 bajando, -1 subiendo    for ch in s:        rows[r] += ch        if r == 0:            step = 1        elif r == k - 1:            step = -1        r += step    return """".join(rows)","Se simula el recorrido por filas con una variable de fila actual y una dirección (bajando/subiendo). Cada carácter se agrega a su fila correspondiente, y al final se concatenan todas las filas.",O(n),O(n)
+ex_0008,facil,math,"Dado un número entero con signo, devuelve el número obtenido al invertir el orden de sus dígitos.Si el resultado no puede representarse dentro del rango permitido de enteros con signo, devuelve 0.",Un número entero con signo.,"Un número entero que corresponde al valor obtenido al invertir los dígitos, o 0 si el resultado está fuera de rango.",El valor de entrada se encuentra dentro de un rango finito de enteros con signoEl resultado debe respetar ese mismo rangoNo se permiten ceros a la izquierda en la salida,x = -123,-321,def reverse_integer(x: int) -> int:    sign = -1 if x < 0 else 1    x = abs(x)    rev = 0    while x > 0:        rev = rev * 10 + (x % 10)        x //= 10    rev *= sign    if rev < -2**31 or rev > 2**31 - 1:        return 0    return rev,Se extraen los dígitos del número uno por uno y se reconstruye el valor invertido. Al final se verifica que el resultado esté dentro del rango permitido antes de devolverlo.,O(d) donde d es el número de dígitos,O(1)
+ex_0009,facil,strings,"Dada una cadena, conviértela en un número entero con signo siguiendo estas reglas: ignora espacios iniciales, interpreta un signo opcional y lee los dígitos consecutivos hasta que aparezca un carácter no válido. Si no se puede formar un número válido, devuelve 0. Si el valor final excede el rango permitido, ajústalo al límite correspondiente.","Una cadena que puede contener espacios, signos, dígitos y otros caracteres.","Un número entero con signo obtenido a partir de la cadena, o 0 si no se puede formar un valor válido.","0 ? longitud de la cadena ? 200La cadena puede contener letras, dígitos, espacios y signosEl resultado debe respetar un rango finito de enteros con signo","s = ""   -042""",-42,"def string_to_int(s: str) -> int:    i = 0    n = len(s)    # Ignorar espacios iniciales    while i < n and s[i] == "" "":        i += 1    # Signo    sign = 1    if i < n and s[i] in ""+-"":        if s[i] == ""-"":            sign = -1        i += 1    # Conversión    value = 0    while i < n and s[i].isdigit():        value = value * 10 + (ord(s[i]) - ord(""0""))        i += 1    value *= sign    # Ajustar a rango    if value < -2**31:        return -2**31    if value > 2**31 - 1:        return 2**31 - 1    return value","Se recorre la cadena ignorando espacios iniciales, se determina el signo y se construye el número leyendo dígitos consecutivos. Al final, se valida que el resultado esté dentro del rango permitido.",O(n),O(1)
+ex_0010,facil,math,"Dado un número entero con signo, determina si se lee igual de izquierda a derecha que de derecha a izquierda. Devuelve verdadero si cumple esta propiedad y falso en caso contrario.",Un número entero con signo.,Un valor booleano que indica si el número es simétrico al leerse en ambos sentidos.,"El número puede ser positivo, negativo o ceroEl valor pertenece a un rango finito de enteros con signoNo se permiten ceros a la izquierda al evaluar la simetría",x = 121,TRUE,def is_palindrome_number(x: int) -> bool:    if x < 0:        return False    original = x    rev = 0    while x > 0:        rev = rev * 10 + (x % 10)        x //= 10    return original == rev,"Se invierte el número original y se compara con el valor inicial. Si ambos coinciden, el número es palíndromo. Los números negativos se descartan directamente.",O(d) donde d es el número de dígitos,O(1)
+ex_0011,dificil,dp,"Dadas dos cadenas s (texto) y p (patrón), determina si p coincide exactamente con todo s. El patrón admite dos operadores:. coincide con cualquier carácter individual* coincide con cero o más repeticiones del carácter inmediatamente anteriorLa coincidencia debe cubrir toda la cadena s (no se permiten coincidencias parciales).",Dos cadenas: una cadena de texto y una cadena patrón que puede incluir los símbolos . y *.,Un valor booleano que indica si el patrón coincide completamente con la cadena.,1 ? longitud de s ? 201 ? longitud de p ? 20Cada * siempre tiene un carácter válido inmediatamente antes,"s = ""aa""p = ""a*""",TRUE,"def regex_match(s: str, p: str) -> bool:    m, n = len(s), len(p)    dp = [[False] * (n + 1) for _ in range(m + 1)]    dp[0][0] = True    # Patrones como a*, a*b*, etc. pueden coincidir con cadena vacía    for j in range(2, n + 1):        if p[j - 1] == ""*"" and dp[0][j - 2]:            dp[0][j] = True    for i in range(1, m + 1):        for j in range(1, n + 1):            if p[j - 1] == ""*"":                # Caso 1: usar * como ""cero repeticiones""                dp[i][j] = dp[i][j - 2]                # Caso 2: usar * consumiendo un carácter si coincide                prev = p[j - 2]                if prev == ""."" or prev == s[i - 1]:                    dp[i][j] = dp[i][j] or dp[i - 1][j]            else:                if p[j - 1] == ""."" or p[j - 1] == s[i - 1]:                    dp[i][j] = dp[i - 1][j - 1]    return dp[m][n]",Se usa programación dinámica donde dp[i][j] indica si los primeros i caracteres de s coinciden con los primeros j caracteres del patrón. El caso * se maneja considerando cero repeticiones o consumir un carácter adicional si el símbolo previo coincide.,O(m · n),O(m · n)
+ex_0012,intermedio,two_pointers,"Dado un arreglo de enteros no negativos que representa alturas de líneas verticales igualmente espaciadas, elige dos posiciones distintas para formar un recipiente con el eje horizontal. Calcula el máximo volumen de agua que podría contener ese recipiente. No está permitido inclinarlo.",Un arreglo de enteros no negativos que representan alturas en posiciones consecutivas.,Un entero que representa el área máxima posible formada por dos alturas y la distancia entre ellas.,2 ? n ? 100 0000 ? altura[i] ? 10 000Las posiciones están igualmente espaciadas,"height = [1,8,6,2,5,4,8,3,7]",49,"def max_container(height):    left, right = 0, len(height) - 1    best = 0    while left < right:        h = min(height[left], height[right])        area = h * (right - left)        if area > best:            best = area        # Mover el puntero que limita la altura        if height[left] < height[right]:            left += 1        else:            right -= 1    return best","Se evalúa el área usando dos extremos y se actualiza el máximo. Para buscar mejores áreas, se mueve el puntero del lado con menor altura, ya que mantener esa altura no puede mejorar el área si solo se reduce la distancia.",O(n),O(1)
+ex_0013,intermedio,greedy,"Dado un entero positivo, conviértelo a su representación en números romanos usando los símbolos estándar (I, V, X, L, C, D, M) y las formas sustractivas permitidas (por ejemplo, IV, IX, XL, XC, CD, CM).",Un entero positivo dentro de un rango limitado.,Una cadena que representa el número en notación romana.,1 ? num ? 3999Deben usarse las formas sustractivas estándar cuando correspondaLa salida debe ser una representación romana válida,num = 1994,"""MCMXCIV""","def int_to_roman(num: int) -> str:    table = [        (1000, ""M""),        (900,  ""CM""),        (500,  ""D""),        (400,  ""CD""),        (100,  ""C""),        (90,   ""XC""),        (50,   ""L""),        (40,   ""XL""),        (10,   ""X""),        (9,    ""IX""),        (5,    ""V""),        (4,    ""IV""),        (1,    ""I""),    ]    res = []    for value, sym in table:        if num == 0:            break        count = num // value        if count:            res.append(sym * count)            num -= value * count    return """".join(res)","Se usa una lista de valores romanos ordenada de mayor a menor (incluyendo casos sustractivos). Se toma repetidamente el mayor valor posible, se agrega su símbolo y se reduce el número hasta llegar a cero.",O(1),O(1)
+ex_0014,facil,math,"Dada una cadena que representa un número romano válido, conviértela a su valor entero correspondiente.",Una cadena que representa un número romano válido.,Un número entero que corresponde al valor del número romano.,1 ? longitud de la cadena ? 15La entrada representa un número romano válidoEl valor resultante está dentro de un rango finito,"s = ""MCMXCIV""",1994,"def roman_to_int(s: str) -> int:    value = {        ""I"": 1, ""V"": 5, ""X"": 10, ""L"": 50,        ""C"": 100, ""D"": 500, ""M"": 1000    }    total = 0    prev = 0    for ch in reversed(s):        curr = value[ch]        if curr < prev:            total -= curr        else:            total += curr        prev = curr    return total","Se recorre la cadena de derecha a izquierda. Si un símbolo tiene un valor menor que el símbolo previo, se resta; en caso contrario, se suma. Esto permite manejar correctamente las formas sustractivas.",O(n),O(1)
+ex_0015,facil,strings,"Dado un conjunto de cadenas, determina el prefijo común más largo que aparece al inicio de todas ellas. Si no existe un prefijo común, devuelve una cadena vacía.",Un arreglo de cadenas.,"Una cadena que representa el prefijo común más largo entre todas las cadenas, o una cadena vacía si no existe.",1 ? número de cadenas ? 200Cada cadena puede ser vacíaLas cadenas contienen solo letras minúsculas,"strs = [""flower"", ""flow"", ""flight""]","""fl""","def longest_common_prefix(strs):    if not strs:        return """"    prefix = strs[0]    for s in strs[1:]:        i = 0        while i < len(prefix) and i < len(s) and prefix[i] == s[i]:            i += 1        prefix = prefix[:i]        if not prefix:            return """"    return prefix","Se toma la primera cadena como prefijo inicial y se va recortando al compararla con cada una de las demás, manteniendo solo los caracteres coincidentes desde el inicio.",O(n · m),O(1)
+ex_0016,dificil,two_pointers,"Dado un arreglo de enteros, encuentra todas las ternas de valores distintos por índice cuya suma sea igual a 0. El conjunto de ternas devuelto no debe contener duplicados (dos ternas se consideran iguales si contienen los mismos valores, sin importar el orden).",Un arreglo de enteros (puede contener valores repetidos y negativos).,"Una lista de ternas (listas de 3 enteros) cuya suma sea 0, sin duplicados.",3 ? longitud del arreglo ? 3000Los valores pueden ser negativos y repetidosNo deben repetirse ternas equivalentes en la salida,"nums = [-1,0,1,2,-1,-4]","[[-1,-1,2],[-1,0,1]]","def three_sum(nums):    nums.sort()    res = []    n = len(nums)    for i in range(n - 2):        if i > 0 and nums[i] == nums[i - 1]:            continue  # evitar duplicados en el primer elemento        a = nums[i]        left, right = i + 1, n - 1        while left < right:            s = a + nums[left] + nums[right]            if s == 0:                res.append([a, nums[left], nums[right]])                left += 1                right -= 1                # saltar duplicados en left y right                while left < right and nums[left] == nums[left - 1]:                    left += 1                while left < right and nums[right] == nums[right + 1]:                    right -= 1            elif s < 0:                left += 1            else:                right -= 1    return res","Se ordena el arreglo y para cada posición fija i se usa un par de punteros para buscar pares que completen suma 0. El control de duplicados se logra saltando valores repetidos tanto en i como en los punteros, evitando ternas equivalentes.",O(n^2),O(1)
+ex_0017,intermedio,two_pointers,"Dado un arreglo de enteros y un valor objetivo, elige tres elementos en índices distintos de forma que su suma sea la más cercana posible al objetivo. Devuelve esa suma.",Un arreglo de enteros y un entero objetivo.,Un entero que representa la suma de tres elementos cuya distancia absoluta al objetivo es mínima.,3 ? longitud del arreglo ? 500Los valores pueden ser negativosExiste una única respuesta óptima,"nums = [-1,2,1,-4], target = 1",2,"def three_sum_closest(nums, target):    nums.sort()    n = len(nums)    best = nums[0] + nums[1] + nums[2]    for i in range(n - 2):        left, right = i + 1, n - 1        while left < right:            s = nums[i] + nums[left] + nums[right]            if abs(s - target) < abs(best - target):                best = s            if s == target:                return s            elif s < target:                left += 1            else:                right -= 1    return best",Se ordena el arreglo y para cada índice fijo se usan dos punteros para explorar sumas posibles. Se mantiene la mejor suma encontrada según la distancia absoluta al objetivo y se ajustan punteros según si la suma actual es menor o mayor que el objetivo.,O(n^2),O(1)
+ex_0018,intermedio,backtracking,"Dada una cadena de dígitos entre 2 y 9, genera todas las posibles combinaciones de letras que se pueden formar asociando cada dígito con un conjunto fijo de letras. Devuelve todas las combinaciones posibles.",Una cadena de dígitos del 2 al 9.,Una lista de cadenas que representan todas las combinaciones posibles de letras.,1 ? longitud de la cadena ? 4Cada dígito corresponde a un conjunto de letrasEl orden de la salida no importa,"digits = ""23""","[""ad"",""ae"",""af"",""bd"",""be"",""bf"",""cd"",""ce"",""cf""]","def letter_combinations(digits):    if not digits:        return []    mapping = {        ""2"": ""abc"", ""3"": ""def"", ""4"": ""ghi"", ""5"": ""jkl"",        ""6"": ""mno"", ""7"": ""pqrs"", ""8"": ""tuv"", ""9"": ""wxyz""    }    res = []    def backtrack(i, path):        if i == len(digits):            res.append("""".join(path))            return        for ch in mapping[digits[i]]:            path.append(ch)            backtrack(i + 1, path)            path.pop()    backtrack(0, [])    return res",Se construyen las combinaciones letra por letra avanzando sobre la cadena de dígitos. En cada posición se prueban todas las letras asociadas al dígito actual y se continúa hasta completar una combinación.,O(k^n),O(n)
+ex_0019,dificil,two_pointers,"Dado un arreglo de enteros y un valor objetivo, encuentra todas las combinaciones únicas de cuatro valores (usando índices distintos) cuya suma sea igual al objetivo. No deben repetirse combinaciones equivalentes en la salida.",Un arreglo de enteros y un entero objetivo.,"Una lista de cuádruples (listas de 4 enteros) cuya suma es el objetivo, sin duplicados.",1 ? longitud del arreglo ? 200Los valores pueden repetirse y ser negativosNo deben repetirse cuádruples equivalentes en la salida,"nums = [1,0,-1,0,-2,2], target = 0","[[-2,-1,1,2],[-2,0,0,2],[-1,0,0,1]]","def four_sum(nums, target):    nums.sort()    n = len(nums)    res = []    for i in range(n - 3):        if i > 0 and nums[i] == nums[i - 1]:            continue        for j in range(i + 1, n - 2):            if j > i + 1 and nums[j] == nums[j - 1]:                continue            left, right = j + 1, n - 1            while left < right:                s = nums[i] + nums[j] + nums[left] + nums[right]                if s == target:                    res.append([nums[i], nums[j], nums[left], nums[right]])                    left += 1                    right -= 1                    while left < right and nums[left] == nums[left - 1]:                        left += 1                    while left < right and nums[right] == nums[right + 1]:                        right -= 1                elif s < target:                    left += 1                else:                    right -= 1    return res",Se ordena el arreglo y se fijan dos posiciones con dos bucles. Para las posiciones restantes se usa un par de punteros para encontrar sumas iguales al objetivo. Se evitan duplicados saltando valores repetidos en cada nivel.,O(n^3),O(1)
+ex_0020,intermedio,linked_list,"Dada la cabeza de una lista enlazada, elimina el nodo que se encuentra en la posición n contando desde el final de la lista y devuelve la cabeza resultante.",Una lista enlazada y un entero positivo n que indica una posición contada desde el final.,La cabeza de la lista enlazada después de eliminar el nodo indicado.,1 ? número de nodos ? 301 ? n ? tamaño de la listaLos valores de los nodos son no negativos,"head = [1,2,3,4,5], n = 2","[1,2,3,5]","class ListNode:    def __init__(self, val=0, next=None):        self.val = val        self.next = nextdef remove_nth_from_end(head, n):    dummy = ListNode(0, head)    slow = dummy    fast = dummy    # Avanzar fast n+1 pasos    for _ in range(n + 1):        fast = fast.next    # Mover ambos hasta que fast llegue al final    while fast:        slow = slow.next        fast = fast.next    # Eliminar el nodo    slow.next = slow.next.next    return dummy.next","Se usan dos punteros con una separación fija. Cuando el puntero rápido llega al final, el puntero lento queda justo antes del nodo a eliminar, permitiendo ajustar los enlaces en una sola pasada.",O(n),O(1)
+ex_0021,facil,stack,"Dada una cadena formada únicamente por paréntesis y corchetes, determina si la secuencia es válida. Una secuencia es válida si cada símbolo de apertura se cierra con el mismo tipo de símbolo y en el orden correcto.","Una cadena compuesta únicamente por los caracteres (, ), {, }, [ y ].",Un valor booleano que indica si la secuencia es válida o no.,1 ? longitud de la cadena ? 10 000La cadena contiene solo símbolos de paréntesis y corchetesEl orden de cierre debe respetar el orden de apertura,"s = ""([])""",TRUE,"def is_valid_parentheses(s: str) -> bool:    stack = []    match = {')': '(', ']': '[', '}': '{'}    for ch in s:        if ch in match.values():            stack.append(ch)        else:            if not stack or stack[-1] != match.get(ch):                return False            stack.pop()    return not stack","Se utiliza una pila para almacenar los símbolos de apertura. Al encontrar un símbolo de cierre, se verifica que corresponda al último símbolo abierto. Al final, la pila debe quedar vacía para que la secuencia sea válida.",O(n),O(n)
+ex_0022,facil,linked_list,Se te dan las cabezas de dos listas enlazadas ordenadas. Combina ambas listas en una sola lista enlazada ordenada utilizando los nodos existentes y devuelve la cabeza del resultado.,Dos listas enlazadas ordenadas en orden no decreciente.,La cabeza de una lista enlazada que contiene todos los nodos de ambas listas en orden.,El número total de nodos es acotadoLos valores pueden ser negativosLas listas de entrada ya están ordenadas,"list1 = [1,2,4]list2 = [1,3,4]","[1,1,2,3,4,4]","class ListNode:    def __init__(self, val=0, next=None):        self.val = val        self.next = nextdef merge_two_lists(l1, l2):    dummy = ListNode()    curr = dummy    while l1 and l2:        if l1.val <= l2.val:            curr.next = l1            l1 = l1.next        else:            curr.next = l2            l2 = l2.next        curr = curr.next    curr.next = l1 if l1 else l2    return dummy.next","Se comparan los valores actuales de ambas listas y se enlaza el nodo menor al resultado. El proceso continúa hasta que una lista se agota, enlazando luego el resto de la otra lista.",O(n + m),O(1)
+ex_0023,intermedio,backtracking,"Dado un entero n, genera todas las cadenas distintas que representen secuencias de paréntesis correctamente balanceadas usando exactamente n pares.",Un entero n que indica el número de pares de paréntesis.,Una lista de cadenas con todas las secuencias válidas de longitud 2n.,1 ? n ? 8Cada salida debe estar correctamente balanceadaNo deben repetirse secuencias en la salida,n = 3,"[""((()))"",""(()())"",""(())()"",""()(())"",""()()()""]","def generate_parentheses(n: int):    res = []    def build(curr, opened, closed):        if len(curr) == 2 * n:            res.append(curr)            return        if opened < n:            build(curr + ""("", opened + 1, closed)        if closed < opened:            build(curr + "")"", opened, closed + 1)    build("""", 0, 0)    return res","Se construyen cadenas agregando paréntesis de apertura mientras no se exceda n, y paréntesis de cierre solo si no supera la cantidad de aperturas ya colocadas. Esto garantiza que todas las secuencias generadas sean válidas.",O(C_n),O(n)
+ex_0024,dificil,heaps,Se recibe un conjunto de k listas enlazadas ordenadas en forma ascendente. Combina todas las listas en una sola lista enlazada ordenada y devuelve la cabeza del resultado.,Un arreglo de k listas enlazadas ordenadas (cada una puede estar vacía).,La cabeza de una lista enlazada ordenada que contiene todos los nodos de todas las listas.,0 ? k ? 10 000La suma total de nodos no excede 10 000Cada lista de entrada ya está ordenada,"lists = [[1,4,5],[1,3,4],[2,6]]","[1,1,2,3,4,4,5,6]","import heapqclass ListNode:    def __init__(self, val=0, next=None):        self.val = val        self.next = nextdef merge_k_lists(lists):    heap = []    uid = 0  # para desempatar nodos con mismo valor    for node in lists:        if node:            heapq.heappush(heap, (node.val, uid, node))            uid += 1    dummy = ListNode()    tail = dummy    while heap:        _, _, node = heapq.heappop(heap)        tail.next = node        tail = tail.next        if node.next:            heapq.heappush(heap, (node.next.val, uid, node.next))            uid += 1    tail.next = None    return dummy.next",Se mantiene un heap con el nodo actual más pequeño de cada lista. Se extrae el mínimo y se agrega al resultado; luego se inserta el siguiente nodo de la lista de donde salió. Esto asegura que siempre se elige el menor disponible.,O(N log k),O(k)
+ex_0025,dificil,linked_list,Se recibe un conjunto de k listas enlazadas ordenadas en forma ascendente. Combina todas las listas en una sola lista enlazada ordenada y devuelve la cabeza del resultado.,Un arreglo de k listas enlazadas ordenadas (cada una puede estar vacía).,La cabeza de una lista enlazada ordenada que contiene todos los nodos de todas las listas.,0 ? k ? 10 000La suma total de nodos no excede 10 000Cada lista de entrada ya está ordenada,"lists = [[1,4,5],[1,3,4],[2,6]]","[1,1,2,3,4,4,5,6]","class ListNode:    def __init__(self, val=0, next=None):        self.val = val        self.next = nextdef merge_two(a, b):    dummy = ListNode()    tail = dummy    while a and b:        if a.val <= b.val:            tail.next = a            a = a.next        else:            tail.next = b            b = b.next        tail = tail.next    tail.next = a if a else b    return dummy.nextdef merge_k_lists(lists):    if not lists:        return None    interval = 1    while interval < len(lists):        for i in range(0, len(lists) - interval, interval * 2):            lists[i] = merge_two(lists[i], lists[i + interval])        interval *= 2    return lists[0]","Se mezclan listas en parejas: primero se combinan de 2 en 2, luego los resultados se vuelven a combinar, repitiendo hasta quedar una sola lista. Esto reduce la cantidad de mezclas necesarias y mantiene eficiencia.",O(N log k),O(1)
+ex_0026,intermedio,linked_list,"Dada la cabeza de una lista enlazada, intercambia cada par de nodos adyacentes y devuelve la cabeza de la lista resultante. La estructura de la lista debe modificarse únicamente mediante enlaces entre nodos.",La cabeza de una lista enlazada.,La cabeza de la lista enlazada después de intercambiar cada par de nodos adyacentes.,La lista puede estar vacíaEl número de nodos es acotadoLos valores de los nodos no deben modificarse,"head = [1,2,3,4]","[2,1,4,3]","class ListNode:    def __init__(self, val=0, next=None):        self.val = val        self.next = nextdef swap_pairs(head):    dummy = ListNode(0, head)    prev = dummy    while prev.next and prev.next.next:        first = prev.next        second = first.next        first.next = second.next        second.next = first        prev.next = second        prev = first    return dummy.next",Se utiliza un nodo ficticio para simplificar el manejo de la cabeza. En cada iteración se intercambian dos nodos consecutivos ajustando únicamente los enlaces entre ellos y se avanza al siguiente par.,O(n),O(1)
+ex_0027,dificil,linked_list,"Dada la cabeza de una lista enlazada y un entero k, invierte los nodos de la lista en grupos consecutivos de tamaño k. Si al final quedan menos de k nodos, ese segmento final debe permanecer en el mismo orden. Devuelve la cabeza de la lista resultante.",La cabeza de una lista enlazada y un entero k.,La cabeza de la lista enlazada después de invertir cada grupo completo de tamaño k.,"1 ? k ? n ? 5000Si un grupo final tiene menos de k nodos, no se invierteSe deben modificar enlaces entre nodos, no los valores","head = [1,2,3,4,5], k = 3","[3,2,1,4,5]","class ListNode:    def __init__(self, val=0, next=None):        self.val = val        self.next = nextdef reverse_k_group(head, k):    dummy = ListNode(0, head)    group_prev = dummy    while True:        # Encontrar el k-ésimo nodo desde group_prev        kth = group_prev        for _ in range(k):            kth = kth.next            if not kth:                return dummy.next        group_next = kth.next        # Revertir el grupo        prev = group_next        curr = group_prev.next        while curr != group_next:            nxt = curr.next            curr.next = prev            prev = curr            curr = nxt        # Conectar el grupo revertido        tmp = group_prev.next  # será el final del grupo después de invertir        group_prev.next = kth        group_prev = tmp","Se procesa la lista por bloques. Para cada bloque, primero se verifica que existan k nodos. Luego se invierte el segmento apuntando cada nodo hacia el anterior, y finalmente se reconectan los extremos del bloque con el resto de la lista.",O(n),O(1)
+ex_0028,facil,two_pointers,"Dado un arreglo de enteros ordenado en forma no decreciente, elimina los valores duplicados de manera que cada elemento único aparezca una sola vez. El arreglo debe modificarse directamente y se debe devolver la cantidad de elementos únicos.",Un arreglo de enteros ordenado en forma no decreciente.,Un entero que indica cuántos elementos únicos hay en el arreglo después de eliminar duplicados.,El arreglo contiene al menos un elementoEl arreglo ya está ordenadoLa modificación debe realizarse directamente sobre el arreglo,"nums = [0,0,1,1,1,2,2,3,3,4]",5,"def remove_duplicates(nums):    if not nums:        return 0    write = 1    for read in range(1, len(nums)):        if nums[read] != nums[read - 1]:            nums[write] = nums[read]            write += 1    return write","Se utiliza un puntero de lectura para recorrer el arreglo y un puntero de escritura para colocar los elementos únicos. Cada vez que se detecta un valor distinto al anterior, se copia en la posición correspondiente.",O(n),O(1)
+ex_0029,facil,two_pointers,"Dado un arreglo de enteros y un valor específico, elimina todas las apariciones de ese valor directamente en el arreglo. Devuelve la cantidad de elementos que permanecen después de la eliminación.",Un arreglo de enteros y un valor entero a eliminar.,Un entero que representa la cantidad de elementos distintos del valor eliminado.,El arreglo puede estar vacíoEl orden final de los elementos no importaLa modificación debe realizarse directamente sobre el arreglo,"nums = [0,1,2,2,3,0,4,2], val = 2",5,"def remove_element(nums, val):    write = 0    for read in range(len(nums)):        if nums[read] != val:            nums[write] = nums[read]            write += 1    return write",Se recorre el arreglo con un puntero de lectura y se copian únicamente los valores distintos de val en las primeras posiciones del arreglo usando un puntero de escritura.,O(n),O(1)
+ex_0030,facil,strings,"Dadas dos cadenas, determina el índice de la primera aparición de la segunda cadena dentro de la primera. Si no existe tal aparición, devuelve -1.",Dos cadenas de texto: una cadena principal y una subcadena a buscar.,Un entero que indica el índice de la primera aparición de la subcadena o -1 si no se encuentra.,Ambas cadenas tienen longitud positivaLas cadenas contienen solo letras minúsculasLa coincidencia debe ser exacta y continua,"haystack = ""sadbutsad""needle = ""sad""",0,"def first_occurrence(haystack, needle):    n, m = len(haystack), len(needle)    if m > n:        return -1    for i in range(n - m + 1):        if haystack[i:i + m] == needle:            return i    return -1","Se recorre la cadena principal comparando subcadenas del mismo tamaño que la cadena buscada. Cuando se encuentra una coincidencia exacta, se devuelve el índice inicial.",O(n · m),O(1)
+ex_0031,dificil,bitwise,"Dados dos enteros, calcula el resultado de dividir el primero entre el segundo sin utilizar los operadores de multiplicación, división ni módulo. El resultado debe truncarse hacia cero y respetar los límites de enteros con signo de 32 bits.",Dos enteros: el dividendo y el divisor.,Un entero que representa el cociente truncado de la división.,"El divisor nunca es ceroEl resultado debe estar en el rango de enteros de 32 bitsNo se pueden usar operadores de multiplicación, división ni módulo",dividend = 7divisor = -3,-2,"def divide(dividend, divisor):    INT_MAX = 2**31 - 1    INT_MIN = -2**31    if dividend == INT_MIN and divisor == -1:        return INT_MAX    sign = -1 if (dividend < 0) ^ (divisor < 0) else 1    a, b = abs(dividend), abs(divisor)    result = 0    while a >= b:        temp, multiple = b, 1        while a >= (temp << 1):            temp <<= 1            multiple <<= 1        a -= temp        result += multiple    return sign * result",Se utiliza resta repetida optimizada mediante duplicación exponencial (desplazamientos de bits) para reducir el número de operaciones. Se controla el signo y se maneja explícitamente el caso de overflow.,O(log n),O(1)
+ex_0032,dificil,sliding_window,"Dada una cadena s y una lista de palabras words (todas de la misma longitud), encuentra todos los índices donde comienza un segmento de s que puede formarse concatenando cada palabra de words exactamente una vez, en cualquier orden, sin caracteres extra entre ellas. Devuelve los índices de inicio.",s: cadena de letras minúsculaswords: lista de cadenas (todas con la misma longitud),Una lista de enteros con los índices de inicio de cada concatenación válida.,1 ? longitud de s ? 10 0001 ? cantidad de palabras ? 5000Todas las palabras tienen la misma longitud,"s = ""barfoothefoobarman""words = [""foo"", ""bar""]","[0, 9]","from collections import Counter, defaultdictdef find_substring(s, words):    if not s or not words:        return []    word_len = len(words[0])    total_words = len(words)    window_len = word_len * total_words    n = len(s)    need = Counter(words)    ans = []    # Recorremos por ""offsets"" para alinear el corte de palabras    for start in range(word_len):        left = start        seen = defaultdict(int)        matched = 0        # right avanza de palabra en palabra        for right in range(start, n - word_len + 1, word_len):            w = s[right:right + word_len]            if w in need:                seen[w] += 1                matched += 1                # Si se excede el conteo permitido, contraer desde la izquierda                while seen[w] > need[w]:                    left_word = s[left:left + word_len]                    seen[left_word] -= 1                    left += word_len                    matched -= 1                # Si tenemos exactamente total_words palabras en ventana, registrar                if matched == total_words:                    ans.append(left)                    # Mover ventana quitando la palabra más a la izquierda                    left_word = s[left:left + word_len]                    seen[left_word] -= 1                    left += word_len                    matched -= 1            else:                # Reiniciar ventana si encontramos palabra no válida                seen.clear()                matched = 0                left = right + word_len    return ans","Como todas las palabras tienen la misma longitud, se recorre s en bloques de tamaño fijo. Para cada offset se usa una ventana deslizante que mantiene conteos de palabras vistas y se ajusta cuando algún conteo excede el requerido. Cuando la ventana contiene exactamente todas las palabras, se guarda el índice.",O(n),O(m) donde m es el número de palabras distintas
+ex_0033,dificil,sorting,"Dado un arreglo de enteros, reordénalo para obtener la siguiente permutación en orden lexicográfico. Si no existe una permutación mayor, reordena el arreglo a la permutación más pequeña posible (orden ascendente). La modificación debe hacerse directamente sobre el arreglo usando memoria extra constante.",Un arreglo de enteros.,El mismo arreglo modificado para representar la siguiente permutación lexicográfica.,1 ? longitud del arreglo ? 100Los valores pueden repetirseLa transformación debe hacerse in-place con memoria constante,"nums = [1,2,3]","[1,3,2]","def next_permutation(nums):    n = len(nums)    # 1) encontrar el primer índice i desde la derecha tal que nums[i] < nums[i+1]    i = n - 2    while i >= 0 and nums[i] >= nums[i + 1]:        i -= 1    if i >= 0:        # 2) encontrar desde la derecha el primer nums[j] > nums[i]        j = n - 1        while nums[j] <= nums[i]:            j -= 1        nums[i], nums[j] = nums[j], nums[i]    # 3) revertir el sufijo (i+1 .. n-1) para dejarlo en el orden mínimo    left, right = i + 1, n - 1    while left < right:        nums[left], nums[right] = nums[right], nums[left]        left += 1        right -= 1","explicacion_breveSe localiza un pivote donde el arreglo deja de ser no creciente desde la derecha. Al intercambiar el pivote con el menor elemento mayor que él en el sufijo y luego revertir ese sufijo, se obtiene la siguiente permutación lexicográfica mínima posible.",O(n),
+ex_0034,dificil,stack,"Dada una cadena formada únicamente por paréntesis de apertura y cierre, devuelve la longitud del substring contiguo más largo que sea una secuencia de paréntesis correctamente balanceada.",Una cadena compuesta solo por ( y ).,Un entero que representa la longitud máxima de un substring válido.,0 ? longitud de la cadena ? 30 000La cadena contiene únicamente ( y )El substring debe ser contiguo,"s = "")()())""",4,"def longest_valid_parentheses(s: str) -> int:    best = 0    stack = [-1]  # índice base para calcular longitudes    for i, ch in enumerate(s):        if ch == '(':            stack.append(i)        else:            stack.pop()            if not stack:                stack.append(i)  # nuevo punto base            else:                best = max(best, i - stack[-1])    return best","Se guardan índices de paréntesis abiertos en una pila. Cuando aparece un cierre, se intenta emparejar; si no es posible, se reinicia el punto base. Si sí es posible, la longitud del substring válido termina en i y comienza después del índice en la cima de la pila.",O(n),O(n)
+ex_0035,intermedio,sorting,"Se tiene un arreglo de enteros distintos que originalmente estaba ordenado de forma ascendente, pero pudo haber sido rotado en algún punto. Dado un valor objetivo, devuelve su índice si existe en el arreglo, o -1 si no aparece. El algoritmo debe ejecutarse en tiempo logarítmico.","Un arreglo de enteros distintos, ordenado y posiblemente rotadoUn entero objetivo target",Un entero: el índice de target o -1 si no está.,1 ? longitud del arreglo ? 5000Todos los valores del arreglo son únicosSe requiere complejidad O(log n),"nums = [4,5,6,7,0,1,2]target = 0",4,"def search_rotated(nums, target):    left, right = 0, len(nums) - 1    while left <= right:        mid = (left + right) // 2        if nums[mid] == target:            return mid        # Identificar qué mitad está ordenada        if nums[left] <= nums[mid]:            # mitad izquierda ordenada            if nums[left] <= target < nums[mid]:                right = mid - 1            else:                left = mid + 1        else:            # mitad derecha ordenada            if nums[mid] < target <= nums[right]:                left = mid + 1            else:                right = mid - 1    return -1","Se usa búsqueda binaria. En cada paso, al menos una mitad del arreglo está ordenada. Se determina cuál mitad está ordenada y se decide si el objetivo podría estar dentro de esa mitad; si no, se continúa en la otra mitad.",O(log n),O(1)
+ex_0036,intermedio,binary_search,"Dado un arreglo de enteros ordenado en forma no decreciente y un valor objetivo, encuentra el índice de la primera y la última aparición de dicho valor. Si el valor no existe en el arreglo, devuelve [-1, -1]. El algoritmo debe ejecutarse en tiempo logarítmico.",nums: arreglo de enteros ordenadotarget: entero objetivo,"Un arreglo de dos enteros [inicio, fin] que representa el rango donde aparece el valor objetivo.",El arreglo puede estar vacíoEl arreglo está ordenado en forma no decrecienteSe requiere complejidad O(log n),"nums = [5,7,7,8,8,10]target = 8","[3,4]","def search_range(nums, target):    def find_left():        l, r = 0, len(nums) - 1        res = -1        while l <= r:            m = (l + r) // 2            if nums[m] >= target:                r = m - 1            else:                l = m + 1            if nums[m] == target:                res = m        return res    def find_right():        l, r = 0, len(nums) - 1        res = -1        while l <= r:            m = (l + r) // 2            if nums[m] <= target:                l = m + 1            else:                r = m - 1            if nums[m] == target:                res = m        return res    return [find_left(), find_right()]",Se realizan dos búsquedas binarias independientes: una para localizar la primera aparición del valor objetivo y otra para la última. En ambas se continúa buscando aun después de encontrar el valor para ajustar el rango correctamente.,O(log n),O(1)
+ex_0037,facil,binary_search,"Dado un arreglo de enteros distintos ordenado de forma ascendente y un valor objetivo, devuelve el índice donde se encuentra el objetivo. Si no existe, devuelve el índice donde debería insertarse para mantener el orden.",nums: arreglo de enteros ordenadotarget: entero objetivo,Un entero que indica el índice donde se encuentra el objetivo o donde debería insertarse.,El arreglo contiene valores distintosEl arreglo está ordenado en forma ascendenteSe requiere complejidad O(log n),"nums = [1,3,5,6]target = 2",1,"def search_insert(nums, target):    left, right = 0, len(nums) - 1    while left <= right:        mid = (left + right) // 2        if nums[mid] == target:            return mid        elif nums[mid] < target:            left = mid + 1        else:            right = mid - 1    return left","Se utiliza búsqueda binaria. Si el objetivo no se encuentra, el puntero izquierdo termina señalando la posición correcta donde el valor debería insertarse para conservar el orden del arreglo.",O(log n),O(1)
+ex_0038,intermedio,hashmaps,"Dado un tablero 9×9 de Sudoku parcialmente lleno, determina si es válido según estas reglas: cada fila, cada columna y cada subcuadro 3×3 no debe contener dígitos repetidos (ignorando las celdas vacías). No es necesario que el Sudoku sea resoluble, solo validar el estado actual.",board: matriz 9×9 de caracteres ('1' a '9' o '.'),Un booleano que indica si el tablero es válido.,El tablero siempre es de tamaño 9×9Cada celda es un dígito '1' a '9' o '.'Solo se validan las celdas llenas (no '.'),"board = [[""5"",""3"",""."",""."",""7"",""."",""."",""."","".""],[""6"",""."",""."",""1"",""9"",""5"",""."",""."","".""],[""."",""9"",""8"",""."",""."",""."",""."",""6"","".""],[""8"",""."",""."",""."",""6"",""."",""."",""."",""3""],[""4"",""."",""."",""8"",""."",""3"",""."",""."",""1""],[""7"",""."",""."",""."",""2"",""."",""."",""."",""6""],[""."",""6"",""."",""."",""."",""."",""2"",""8"","".""],[""."",""."",""."",""4"",""1"",""9"",""."",""."",""5""],[""."",""."",""."",""."",""8"",""."",""."",""7"",""9""]]",TRUE,def is_valid_sudoku(board):    rows = [set() for _ in range(9)]    cols = [set() for _ in range(9)]    boxes = [set() for _ in range(9)]  # 0..8 para subcuadros 3x3    for r in range(9):        for c in range(9):            val = board[r][c]            if val == '.':                continue            b = (r // 3) * 3 + (c // 3)            if val in rows[r] or val in cols[c] or val in boxes[b]:                return False            rows[r].add(val)            cols[c].add(val)            boxes[b].add(val)    return True,"Se usan conjuntos para registrar los dígitos ya vistos por fila, columna y subcuadro 3×3. Para cada celda no vacía, se verifica si ya apareció en alguna de esas estructuras; si sí, el tablero es inválido.",O(1),O(1)
+ex_0039,dificil,backtracking,"Dado un tablero 9×9 de Sudoku parcialmente lleno, completa el tablero llenando las celdas vacías (marcadas con '.') de forma que se cumplan las reglas: cada fila, columna y subcuadro 3×3 contenga los dígitos del 1 al 9 sin repetición. Se garantiza que el tablero tiene una única solución.",board: matriz 9×9 de caracteres ('1' a '9' o '.'),El mismo board modificado in-place con la solución completa.,El tablero siempre es 9×9Las celdas vacías se indican con '.'Se garantiza que existe una única solución válida,"board = [[""5"",""3"",""."",""."",""7"",""."",""."",""."","".""],[""6"",""."",""."",""1"",""9"",""5"",""."",""."","".""],[""."",""9"",""8"",""."",""."",""."",""."",""6"","".""],[""8"",""."",""."",""."",""6"",""."",""."",""."",""3""],[""4"",""."",""."",""8"",""."",""3"",""."",""."",""1""],[""7"",""."",""."",""."",""2"",""."",""."",""."",""6""],[""."",""6"",""."",""."",""."",""."",""2"",""8"","".""],[""."",""."",""."",""4"",""1"",""9"",""."",""."",""5""],[""."",""."",""."",""."",""8"",""."",""."",""7"",""9""]]","[[""5"",""3"",""4"",""6"",""7"",""8"",""9"",""1"",""2""],[""6"",""7"",""2"",""1"",""9"",""5"",""3"",""4"",""8""],[""1"",""9"",""8"",""3"",""4"",""2"",""5"",""6"",""7""],[""8"",""5"",""9"",""7"",""6"",""1"",""4"",""2"",""3""],[""4"",""2"",""6"",""8"",""5"",""3"",""7"",""9"",""1""],[""7"",""1"",""3"",""9"",""2"",""4"",""8"",""5"",""6""],[""9"",""6"",""1"",""5"",""3"",""7"",""2"",""8"",""4""],[""2"",""8"",""7"",""4"",""1"",""9"",""6"",""3"",""5""],[""3"",""4"",""5"",""2"",""8"",""6"",""1"",""7"",""9""]]","def solve_sudoku(board):    rows = [set() for _ in range(9)]    cols = [set() for _ in range(9)]    boxes = [set() for _ in range(9)]    empties = []    for r in range(9):        for c in range(9):            v = board[r][c]            if v == '.':                empties.append((r, c))            else:                b = (r // 3) * 3 + (c // 3)                rows[r].add(v)                cols[c].add(v)                boxes[b].add(v)    digits = [str(d) for d in range(1, 10)]    def candidates(r, c):        b = (r // 3) * 3 + (c // 3)        used = rows[r] | cols[c] | boxes[b]        return [d for d in digits if d not in used]    def backtrack(i):        if i == len(empties):            return True        # Heurística simple: escoger la celda con menos candidatos (MRV)        best = i        best_cands = None        for j in range(i, len(empties)):            r, c = empties[j]            cands = candidates(r, c)            if best_cands is None or len(cands) < len(best_cands):                best_cands = cands                best = j                if len(best_cands) == 1:                    break        empties[i], empties[best] = empties[best], empties[i]        r, c = empties[i]        b = (r // 3) * 3 + (c // 3)        for d in candidates(r, c):            board[r][c] = d            rows[r].add(d)            cols[c].add(d)            boxes[b].add(d)            if backtrack(i + 1):                return True            rows[r].remove(d)            cols[c].remove(d)            boxes[b].remove(d)            board[r][c] = '.'        return False    backtrack(0)","Se usa backtracking para llenar celdas vacías probando dígitos válidos según fila, columna y subcuadro. Para acelerar, se mantiene un registro de dígitos usados con conjuntos y se elige primero la celda con menos opciones (heurística MRV), reduciendo el branching.",O(2^n),O(1)
+ex_0040,intermedio,strings,"Dado un entero positivo n, genera el término número n de la secuencia Count and Say, donde cada término describe al anterior usando codificación por longitud de corrida (run-length encoding).",n: entero positivo,Una cadena que representa el término n de la secuencia,"1 ? n ? 30La secuencia inicia con ""1""Cada término se genera describiendo el anterior",n = 4,"""1211""","def count_and_say(n):    s = ""1""    for _ in range(n - 1):        result = []        i = 0        while i < len(s):            count = 1            while i + 1 < len(s) and s[i] == s[i + 1]:                count += 1                i += 1            result.append(str(count))            result.append(s[i])            i += 1        s = """".join(result)    return s","Se inicia desde el primer término ""1"" y se itera n-1 veces. En cada iteración se recorre la cadena actual contando caracteres consecutivos iguales y se construye la nueva descripción con pares (cantidad, carácter).",O(n * L),O(L)
+ex_0041,intermedio,backtracking,"Dado un arreglo de enteros distintos candidates y un entero target, encuentra todas las combinaciones únicas de números que sumen exactamente target. Un número puede usarse un número ilimitado de veces. Devuelve todas las combinaciones.",candidates: arreglo de enteros distintostarget: entero objetivo,"Una lista de listas, donde cada lista interna es una combinación que suma target.",Los valores en candidates son distintosSe puede reutilizar el mismo número múltiples vecestarget es pequeño y el número de combinaciones válidas es acotado,"candidates = [2,3,6,7]target = 7","[[2,2,3],[7]]","def combination_sum(candidates, target):    candidates.sort()    res = []    def dfs(start, remaining, path):        if remaining == 0:            res.append(path[:])            return        for i in range(start, len(candidates)):            x = candidates[i]            if x > remaining:                break            path.append(x)            dfs(i, remaining - x, path)   # i (no i+1) para permitir repetir            path.pop()    dfs(0, target, [])    return res","def combination_sum(candidates, target):    candidates.sort()    res = []    def dfs(start, remaining, path):        if remaining == 0:            res.append(path[:])            return        for i in range(start, len(candidates)):            x = candidates[i]            if x > remaining:                break            path.append(x)            dfs(i, remaining - x, path)   # i (no i+1) para permitir repetir            path.pop()    dfs(0, target, [])    return res",O(n^2),O(target)
+ex_0042,intermedio,backtracking,"Dado un arreglo de enteros candidates (puede contener duplicados) y un entero target, encuentra todas las combinaciones únicas cuyos elementos sumen exactamente target. Cada elemento del arreglo puede usarse como máximo una vez en la combinación. No se permiten combinaciones duplicadas.",candidates: arreglo de enteros (puede contener duplicados)target: entero objetivo,"Una lista de listas, donde cada lista interna es una combinación única que suma target.",Cada elemento puede usarse a lo sumo una vezEl arreglo puede contener valores repetidosNo deben existir combinaciones duplicadas en la salida,"candidates = [10,1,2,7,6,1,5]target = 8","[[1,1,6],[1,2,5],[1,7],[2,6]]","def combination_sum2(candidates, target):    candidates.sort()    res = []    def dfs(start, remaining, path):        if remaining == 0:            res.append(path[:])            return        for i in range(start, len(candidates)):            x = candidates[i]            # saltar duplicados en el mismo nivel de decisión            if i > start and candidates[i] == candidates[i - 1]:                continue            if x > remaining:                break            path.append(x)            dfs(i + 1, remaining - x, path)  # i+1: cada número una sola vez            path.pop()    dfs(0, target, [])    return res","Se ordena el arreglo y se hace backtracking. Para evitar combinaciones duplicadas, cuando dos valores iguales aparecen consecutivos, solo se permite tomar el primero en cada nivel de la recursión. Además, al llamar recursivamente se avanza a i+1 para no reutilizar el mismo elemento.",O(n^2),O(target)
+ex_0043,dificil,arrays,"Dado un arreglo de enteros desordenado nums, regresa el entero positivo más pequeño que no esté presente en el arreglo. Debes implementar un algoritmo que funcione en tiempo O(n) y utilice espacio auxiliar O(1).",nums: arreglo de enteros,Entero positivo faltante más pequeño,1 <= len(nums) <= 10^5-2^31 <= nums[i] <= 2^31 - 1,"nums = [3,4,-1,1]",2,"def firstMissingPositive(nums):    n = len(nums)    i = 0    while i < n:        x = nums[i]        if 1 <= x <= n and nums[x - 1] != x:            nums[i], nums[x - 1] = nums[x - 1], nums[i]        else:            i += 1    for i in range(n):        if nums[i] != i + 1:            return i + 1    return n + 1","La idea es colocar cada número positivo x en la posición x-1 si está dentro del rango válido. Después de reorganizar el arreglo, se recorre buscando el primer índice i donde nums[i] != i+1, lo que indica que ese número falta. Si todos coinciden, entonces el menor positivo faltante es n+1.",O(n),O(1)
+ex_0044,dificil,two_pointers,"Dado un arreglo height de n enteros no negativos que representa un mapa de elevación (cada barra tiene ancho 1), calcula cuánta agua puede atraparse después de llover entre las barras.",height: arreglo de enteros no negativos (alturas),Un entero: unidades totales de agua atrapada,n == len(height)1 <= n <= 2 * 10^40 <= height[i] <= 10^5,"height = [0,1,0,2,1,0,1,3,2,1,2,1]",6,"def trap(height):    l, r = 0, len(height) - 1    left_max, right_max = 0, 0    water = 0    while l < r:        if height[l] <= height[r]:            if height[l] >= left_max:                left_max = height[l]            else:                water += left_max - height[l]            l += 1        else:            if height[r] >= right_max:                right_max = height[r]            else:                water += right_max - height[r]            r -= 1    return water","Se usan dos punteros (izquierda y derecha) y se mantienen los máximos vistos desde cada lado (left_max, right_max).Siempre se avanza el lado con menor altura porque ese lado limita el agua atrapable en esa posición.El agua en una posición es max_lado - altura_actual cuando el máximo del lado ya es mayor que la altura.",O(n),O(1)
+ex_0045,intermedio,strings,"Dadas dos cadenas num1 y num2 que representan enteros no negativos, regresa su producto también como una cadena. No está permitido usar BigInteger ni convertir directamente las cadenas a enteros.",num1: string de dígitosnum2: string de dígitos,String que representa el producto,"1 <= len(num1), len(num2) <= 200","num1 = ""123""num2 = ""456""","""56088""","def multiply(num1, num2):    if num1 == ""0"" or num2 == ""0"":        return ""0""    n, m = len(num1), len(num2)    result = [0] * (n + m)    for i in range(n - 1, -1, -1):        for j in range(m - 1, -1, -1):            mul = (ord(num1[i]) - 48) * (ord(num2[j]) - 48)            pos1 = i + j            pos2 = i + j + 1            total = mul + result[pos2]            result[pos2] = total % 10            result[pos1] += total // 10    # eliminar ceros iniciales    i = 0    while i < len(result) and result[i] == 0:        i += 1    return """".join(str(d) for d in result[i:])",Se simula la multiplicación manual dígito por dígito. Cada producto parcial se acumula en un arreglo de tamaño n+m. Después se manejan los acarreo (carry) y finalmente se eliminan los ceros iniciales para construir la cadena final.,O(n * m),O(n * m)
+ex_0046,dificil,greedy,"Dadas una cadena s y un patrón p, implementa wildcard matching donde:'?' coincide con cualquier un caracter.'*' coincide con cualquier secuencia de caracteres (incluyendo vacío).El matching debe cubrir toda la cadena s (no parcial).","s: string (solo letras minúsculas)p: string (letras minúsculas, '?' o '*')","Boolean: true si p coincide con toda s, si no false","0 <= len(s), len(p) <= 2000s contiene solo [a-z]p contiene [a-z], '?' o '*'","s = ""aa""p = ""*""",TRUE,"def isMatch(s, p):    i = 0  # puntero en s    j = 0  # puntero en p    star = -1          # última posición de '*' en p    match_i = 0        # posición en s que corresponde al match después del '*'    while i < len(s):        # Caso 1: caracteres iguales o '?'        if j < len(p) and (p[j] == s[i] or p[j] == '?'):            i += 1            j += 1        # Caso 2: encontramos '*'        elif j < len(p) and p[j] == '*':            star = j            match_i = i            j += 1        # Caso 3: mismatch, pero ya vimos un '*', entonces ""expandimos"" el '*'        elif star != -1:            j = star + 1            match_i += 1            i = match_i        # Caso 4: mismatch sin '*'        else:            return False    # Consumir '*' restantes (pueden representar vacío)    while j < len(p) and p[j] == '*':        j += 1    return j == len(p)","Se usa un enfoque greedy con dos punteros. Cuando aparece '*', se guarda su posición y el índice actual en s. Si luego ocurre un mismatch, se retrocede el patrón a después del '*' y se incrementa cuánto abarca el '*' (haciendo que el '*' consuma un carácter más de s). Al final, se permiten '*' sobrantes porque pueden representar la cadena vacía.",O(n + m),O(1)
+ex_0047,intermedio,greedy,"Dado un arreglo nums donde nums[i] indica el salto máximo desde el índice i, empieza en el índice 0 y regresa el número mínimo de saltos necesarios para llegar al índice n-1. Se garantiza que siempre es posible llegar.",nums: arreglo de enteros (saltos máximos),Entero: mínimo número de saltos para llegar al final,1 <= len(nums) <= 10^40 <= nums[i] <= 1000Se garantiza que puedes llegar a n-1,"nums = [2,3,1,1,4]",2,"def jump(nums):    n = len(nums)    jumps = 0    current_end = 0    farthest = 0    for i in range(n - 1):        farthest = max(farthest, i + nums[i])        if i == current_end:            jumps += 1            current_end = farthest    return jumps","Se recorre el arreglo manteniendo el alcance más lejano posible dentro del rango del salto actual. Cuando se llega al final de ese rango (current_end), se incrementa el contador de saltos y se actualiza el nuevo rango al farthest. Esto equivale a hacer capas tipo BFS pero en greedy.",O(n),O(1)
+ex_0048,intermedio,backtracking,"Dado un arreglo nums de enteros distintos, regresa todas las permutaciones posibles. Puedes devolver la respuesta en cualquier orden.",nums: arreglo de enteros distintos,Lista de listas: todas las permutaciones posibles de nums,1 <= len(nums) <= 6-10 <= nums[i] <= 10Todos los enteros son únicos,"nums = [1,2,3]","[[1,2,3],[1,3,2],[2,1,3],[2,3,1],[3,1,2],[3,2,1]]",def permute(nums):    res = []    used = [False] * len(nums)    def dfs(path):        if len(path) == len(nums):            res.append(path[:])            return        for i in range(len(nums)):            if used[i]:                continue            used[i] = True            path.append(nums[i])            dfs(path)            path.pop()            used[i] = False    dfs([])    return res,"Se construyen permutaciones por backtracking: en cada paso se elige un número aún no usado, se agrega al camino actual y se continúa recursivamente. Cuando el camino alcanza longitud n, se guarda como una permutación válida.",O(n · n!),O(n) para la recursión + O(n · n!) para almacenar el resultado
+ex_0049,facil,strings,"Dada una cadena s que contiene palabras y espacios, regresa la longitud de la última palabra. Una palabra es una subcadena máxima que consiste únicamente de caracteres que no son espacio.",s: string con letras y espacios,Entero: longitud de la última palabra,1 <= len(s) <= 10^4s solo contiene letras y espaciosExiste al menos una palabra,"s = "" fly me to the moon """,4,"def lengthOfLastWord(s):    i = len(s) - 1    while i >= 0 and s[i] == "" "":        i -= 1    length = 0    while i >= 0 and s[i] != "" "":        length += 1        i -= 1    return length","Se recorre la cadena desde el final, primero ignorando los espacios finales. Luego se cuenta cuántos caracteres consecutivos distintos de espacio aparecen, lo cual corresponde a la última palabra.",O(n),O(1)
+ex_0050,facil,math,"Dado un arreglo digits que representa un número entero grande, donde cada elemento es un dígito y están ordenados de más significativo a menos significativo, incrementa el número en uno y regresa el arreglo resultante.",digits: arreglo de enteros (09),Arreglo de enteros con el número incrementado,1 <= len(digits) <= 1000 <= digits[i] <= 9No existen ceros a la izquierda,digits = [9],"[1,0]",def plusOne(digits):    i = len(digits) - 1    while i >= 0 and digits[i] == 9:        digits[i] = 0        i -= 1    if i >= 0:        digits[i] += 1        return digits    return [1] + digits,"Se comienza desde el último dígito. Mientras sea 9, se convierte en 0 y se propaga el acarreo hacia la izquierda. Si se encuentra un dígito menor que 9, se incrementa y se termina. Si todos eran 9, se agrega un 1 al inicio.",O(n),O(1)
+ex_0051,facil,strings,"Dadas dos cadenas binarias a y b, regresa su suma también representada como una cadena binaria.",a: string binariob: string binario,String binario que representa la suma,"1 <= len(a), len(b) <= 10^4Solo contienen caracteres '0' y '1'No contienen ceros a la izquierda (excepto ""0"")","a = ""1010""b = ""1011""","""10101""","def addBinary(a, b):    i = len(a) - 1    j = len(b) - 1    carry = 0    res = []    while i >= 0 or j >= 0 or carry:        x = int(a[i]) if i >= 0 else 0        y = int(b[j]) if j >= 0 else 0        total = x + y + carry        res.append(str(total % 2))        carry = total // 2        i -= 1        j -= 1    return """".join(reversed(res))","Se simula la suma binaria empezando desde el final de ambas cadenas, manejando un acarreo. En cada paso se calcula el bit actual y el nuevo carry. Al final se invierte el resultado para obtener el orden correcto.",O(n),O(n)
+ex_0052,facil,math,"Dado un entero no negativo x, regresa la raíz cuadrada entera de x redondeada hacia abajo. No se permite usar funciones de potencia ni exponentes.",x: entero no negativo,Entero: raíz cuadrada entera de x,0 <= x <= 2^31 - 1No usar pow ni operadores de exponente,x = 8,2,def mySqrt(x):    if x < 2:        return x    left = 1    right = x // 2    while left <= right:        mid = (left + right) // 2        val = mid * mid        if val == x:            return mid        if val < x:            left = mid + 1        else:            right = mid - 1    return right,"Se utiliza búsqueda binaria para encontrar el mayor entero cuyo cuadrado sea menor o igual a x. El espacio de búsqueda va de 1 a x/2. Al finalizar, right contiene el valor correcto.",O(log x),O(1)
+ex_0053,facil,linked_list,"Dada la cabeza de una lista enlazada ordenada, elimina todos los nodos duplicados de modo que cada valor aparezca solo una vez. Regresa la lista enlazada resultante, también ordenada.",head: cabeza de una lista enlazada ordenada,head de la lista enlazada sin duplicados,0 <= número de nodos <= 300-100 <= Node.val <= 100La lista está ordenada de forma ascendente,"head = [1,1,2,3,3]","[1,2,3]",def deleteDuplicates(head):    curr = head    while curr and curr.next:        if curr.val == curr.next.val:            curr.next = curr.next.next        else:            curr = curr.next    return head,"Se recorre la lista una sola vez. Si el valor del nodo actual es igual al siguiente, se salta el siguiente nodo. Si son distintos, se avanza normalmente.",O(n),O(1)
+ex_0054,facil,arrays,"Se te dan dos arreglos nums1 y nums2 ordenados en orden no decreciente, y dos enteros m y n que representan cuántos elementos válidos hay en nums1 y nums2. Debes mezclar nums2 dentro de nums1 para que nums1 quede ordenado. No debes regresar el arreglo: el resultado debe quedar almacenado dentro de nums1 (que ya tiene espacio extra al final).","nums1: arreglo de longitud m+n, con primeros m elementos válidos y el resto relleno (0)m: cantidad de elementos válidos en nums1nums2: arreglo de longitud nn: cantidad de elementos en nums2",No retorna nada; nums1 queda modificado en-place con el merge ordenado,"nums1.length == m + nnums2.length == n0 <= m, n <= 2001 <= m + n <= 200-10^9 <= nums1[i], nums2[j] <= 10^9","nums1 = [1,2,3,0,0,0], m = 3nums2 = [2,5,6], n = 3","[1,2,2,3,5,6]","def merge(nums1, m, nums2, n):    i = m - 1    j = n - 1    k = m + n - 1    while j >= 0:        if i >= 0 and nums1[i] > nums2[j]:            nums1[k] = nums1[i]            i -= 1        else:            nums1[k] = nums2[j]            j -= 1        k -= 1",Se hace el merge desde el final para no sobreescribir elementos útiles en nums1. Se comparan los elementos más grandes restantes de ambos arreglos y se coloca el mayor en la posición k. Se continúa hasta insertar todos los elementos de nums2.,O(m + n),O(1)
+ex_0055,facil,binary_tree,"Dada la raíz de un árbol binario, regresa el recorrido inorder de los valores de sus nodos.",root: raíz del árbol binario,Lista de enteros con el recorrido inorder,0 <= número de nodos <= 100-100 <= Node.val <= 100,"root = [1,null,2,3]","[1,3,2]",def inorderTraversal(root):    res = []    stack = []    curr = root    while curr or stack:        while curr:            stack.append(curr)            curr = curr.left        curr = stack.pop()        res.append(curr.val)        curr = curr.right    return res,"Se usa una pila para simular la recursión. Se avanza siempre hacia la izquierda guardando nodos en la pila. Cuando ya no hay más izquierda, se procesa el nodo y se continúa con su hijo derecho.",O(n),O(n)
+ex_0056,facil,binary_tree,"Dadas las raíces de dos árboles binarios p y q, determina si ambos árboles son iguales. Dos árboles son iguales si son estructuralmente idénticos y todos sus nodos tienen el mismo valor.",p: raíz del primer árbol binarioq: raíz del segundo árbol binario,"Boolean: true si los árboles son iguales, false en caso contrario",0 <= número de nodos en cada árbol <= 100-10^4 <= Node.val <= 10^4,"p = [1,2,3]q = [1,2,3]",TRUE,"def isSameTree(p, q):    if not p and not q:        return True    if not p or not q:        return False    if p.val != q.val:        return False    return isSameTree(p.left, q.left) and isSameTree(p.right, q.right)","Se comparan ambos árboles de forma recursiva. Si ambos nodos son nulos, se consideran iguales. Si solo uno es nulo o los valores difieren, se regresa falso. En otro caso, se comparan los subárboles izquierdo y derecho.",O(n),O(h)
+ex_0057,facil,binary_tree,"Dada la raíz de un árbol binario, determina si el árbol es simétrico respecto a su centro (espejo de sí mismo).",root: raíz del árbol binario,"Boolean: true si es simétrico, false si no",1 <= número de nodos <= 1000-100 <= Node.val <= 100,"root = [1,2,2,3,4,4,3]",TRUE,"def isSymmetric(root):    def mirror(a, b):        if not a and not b:            return True        if not a or not b:            return False        if a.val != b.val:            return False        return mirror(a.left, b.right) and mirror(a.right, b.left)    return mirror(root.left, root.right)",Se compara recursivamente el subárbol izquierdo con el derecho en forma de espejo. Los valores deben coincidir y sus hijos deben ser reflejos entre sí.,O(n),O(h)
+ex_0058,facil,arrays,"Dado un entero n y una lista de ventas diarias, imprime la suma de los valores positivos.",Un entero n seguido de n enteros.,La suma de los valores positivos.,"1 <= n <= 100000
+Los valores pueden ser negativos.","7
+-3 -3 -6 -7 7 -8 8",15,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(sum(x for x in nums if x > 0))
+",Se recorre la lista y se acumulan solo los valores mayores que cero.,O(n),O(1)
+ex_0059,facil,arrays,Encuentra el valor máximo de una lista de enteros.,Un entero n seguido de n enteros.,El valor máximo.,1 <= n <= 200000,"5
+-47 -39 -23 -21 14",14,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(max(nums))
+",Se recorre la lista y se mantiene el máximo encontrado.,O(n),O(1)
+ex_0060,facil,arrays,"Dado un entero n y una lista de mediciones, imprime la suma de los valores positivos.",Un entero n seguido de n enteros.,La suma de los valores positivos.,"1 <= n <= 100000
+Los valores pueden ser negativos.","6
+10 7 3 -3 4 8",32,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(sum(x for x in nums if x > 0))
+",Se recorre la lista y se acumulan solo los valores mayores que cero.,O(n),O(1)
+ex_0061,facil,strings,Determina si una cadena es un palíndromo exacto.,Una línea con una cadena sin espacios.,"Imprime SI si es palíndromo, en caso contrario NO.",1 <= longitud <= 100000,reconocer,SI,"s = input().strip()
+print(""SI"" if s == s[::-1] else ""NO"")
+",Se compara la cadena con su reverso.,O(n),O(1)
+ex_0062,facil,strings,Cuenta cuántas vocales hay en una cadena.,Una línea con una cadena de texto.,El número total de vocales.,1 <= longitud <= 100000,academia,5,"s = input().strip()
+print(sum(1 for c in s if c in ""aeiouáéíóúAEIOUÁÉÍÓÚ""))
+",Se recorre la cadena y se cuentan los caracteres que son vocal.,O(n),O(1)
+ex_0063,facil,arrays,Encuentra el valor máximo de una lista de enteros.,Un entero n seguido de n enteros.,El valor máximo.,1 <= n <= 200000,"7
+-15 -31 -23 47 -7 -37 -39",47,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(max(nums))
+",Se recorre la lista y se mantiene el máximo encontrado.,O(n),O(1)
+ex_0064,facil,arrays,Encuentra el valor máximo de una lista de enteros.,Un entero n seguido de n enteros.,El valor máximo.,1 <= n <= 200000,"5
+-5 -6 27 -17 -45",27,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(max(nums))
+",Se recorre la lista y se mantiene el máximo encontrado.,O(n),O(1)
+ex_0065,facil,arrays,Encuentra el valor máximo de una lista de enteros.,Un entero n seguido de n enteros.,El valor máximo.,1 <= n <= 200000,"9
+-35 -2 -40 20 -13 30 29 -4 23",30,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(max(nums))
+",Se recorre la lista y se mantiene el máximo encontrado.,O(n),O(1)
+ex_0066,facil,strings,Cuenta cuántas vocales hay en una cadena.,Una línea con una cadena de texto.,El número total de vocales.,1 <= longitud <= 100000,academia,5,"s = input().strip()
+print(sum(1 for c in s if c in ""aeiouáéíóúAEIOUÁÉÍÓÚ""))
+",Se recorre la cadena y se cuentan los caracteres que son vocal.,O(n),O(1)
+ex_0067,facil,arrays,"Dado un entero n y una lista de ventas diarias, imprime la suma de los valores positivos.",Un entero n seguido de n enteros.,La suma de los valores positivos.,"1 <= n <= 100000
+Los valores pueden ser negativos.","6
+-1 -8 -3 -7 2 -2",2,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(sum(x for x in nums if x > 0))
+",Se recorre la lista y se acumulan solo los valores mayores que cero.,O(n),O(1)
+ex_0068,facil,arrays,Encuentra el valor máximo de una lista de enteros.,Un entero n seguido de n enteros.,El valor máximo.,1 <= n <= 200000,"10
+-4 -30 -3 -5 -24 35 -16 39 37 32",39,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(max(nums))
+",Se recorre la lista y se mantiene el máximo encontrado.,O(n),O(1)
+ex_0069,facil,arrays,"Dado un entero n y una lista de mediciones, imprime la suma de los valores positivos.",Un entero n seguido de n enteros.,La suma de los valores positivos.,"1 <= n <= 100000
+Los valores pueden ser negativos.","6
+7 -3 -5 4 2 -2",13,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(sum(x for x in nums if x > 0))
+",Se recorre la lista y se acumulan solo los valores mayores que cero.,O(n),O(1)
+ex_0070,facil,strings,Cuenta cuántas vocales hay en una cadena.,Una línea con una cadena de texto.,El número total de vocales.,1 <= longitud <= 100000,academia,5,"s = input().strip()
+print(sum(1 for c in s if c in ""aeiouáéíóúAEIOUÁÉÍÓÚ""))
+",Se recorre la cadena y se cuentan los caracteres que son vocal.,O(n),O(1)
+ex_0071,facil,strings,Determina si una cadena es un palíndromo exacto.,Una línea con una cadena sin espacios.,"Imprime SI si es palíndromo, en caso contrario NO.",1 <= longitud <= 100000,reconocer,SI,"s = input().strip()
+print(""SI"" if s == s[::-1] else ""NO"")
+",Se compara la cadena con su reverso.,O(n),O(1)
+ex_0072,facil,strings,Cuenta cuántas vocales hay en una cadena.,Una línea con una cadena de texto.,El número total de vocales.,1 <= longitud <= 100000,programacion,5,"s = input().strip()
+print(sum(1 for c in s if c in ""aeiouáéíóúAEIOUÁÉÍÓÚ""))
+",Se recorre la cadena y se cuentan los caracteres que son vocal.,O(n),O(1)
+ex_0073,facil,strings,Determina si una cadena es un palíndromo exacto.,Una línea con una cadena sin espacios.,"Imprime SI si es palíndromo, en caso contrario NO.",1 <= longitud <= 100000,python,NO,"s = input().strip()
+print(""SI"" if s == s[::-1] else ""NO"")
+",Se compara la cadena con su reverso.,O(n),O(1)
+ex_0074,facil,strings,Determina si una cadena es un palíndromo exacto.,Una línea con una cadena sin espacios.,"Imprime SI si es palíndromo, en caso contrario NO.",1 <= longitud <= 100000,reconocer,SI,"s = input().strip()
+print(""SI"" if s == s[::-1] else ""NO"")
+",Se compara la cadena con su reverso.,O(n),O(1)
+ex_0075,facil,strings,Cuenta cuántas vocales hay en una cadena.,Una línea con una cadena de texto.,El número total de vocales.,1 <= longitud <= 100000,datos,2,"s = input().strip()
+print(sum(1 for c in s if c in ""aeiouáéíóúAEIOUÁÉÍÓÚ""))
+",Se recorre la cadena y se cuentan los caracteres que son vocal.,O(n),O(1)
+ex_0076,facil,strings,Determina si una cadena es un palíndromo exacto.,Una línea con una cadena sin espacios.,"Imprime SI si es palíndromo, en caso contrario NO.",1 <= longitud <= 100000,nivel,NO,"s = input().strip()
+print(""SI"" if s == s[::-1] else ""NO"")
+",Se compara la cadena con su reverso.,O(n),O(1)
+ex_0077,facil,arrays,Encuentra el valor máximo de una lista de enteros.,Un entero n seguido de n enteros.,El valor máximo.,1 <= n <= 200000,"8
+32 8 -32 -17 -33 -19 45 21",45,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(max(nums))
+",Se recorre la lista y se mantiene el máximo encontrado.,O(n),O(1)
+ex_0078,facil,strings,Determina si una cadena es un palíndromo exacto.,Una línea con una cadena sin espacios.,"Imprime SI si es palíndromo, en caso contrario NO.",1 <= longitud <= 100000,casa,NO,"s = input().strip()
+print(""SI"" if s == s[::-1] else ""NO"")
+",Se compara la cadena con su reverso.,O(n),O(1)
+ex_0079,facil,arrays,Encuentra el valor máximo de una lista de enteros.,Un entero n seguido de n enteros.,El valor máximo.,1 <= n <= 200000,"9
+1 -4 -22 -33 15 13 -39 46 -44",46,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(max(nums))
+",Se recorre la lista y se mantiene el máximo encontrado.,O(n),O(1)
+ex_0080,facil,arrays,"Dado un entero n y una lista de temperaturas, imprime la suma de los valores positivos.",Un entero n seguido de n enteros.,La suma de los valores positivos.,"1 <= n <= 100000
+Los valores pueden ser negativos.","6
+3 9 -8 2 2 9",25,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(sum(x for x in nums if x > 0))
+",Se recorre la lista y se acumulan solo los valores mayores que cero.,O(n),O(1)
+ex_0081,facil,arrays,Encuentra el valor máximo de una lista de enteros.,Un entero n seguido de n enteros.,El valor máximo.,1 <= n <= 200000,"9
+-18 20 -49 37 42 -36 37 18 46",46,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(max(nums))
+",Se recorre la lista y se mantiene el máximo encontrado.,O(n),O(1)
+ex_0082,facil,strings,Determina si una cadena es un palíndromo exacto.,Una línea con una cadena sin espacios.,"Imprime SI si es palíndromo, en caso contrario NO.",1 <= longitud <= 100000,radar,SI,"s = input().strip()
+print(""SI"" if s == s[::-1] else ""NO"")
+",Se compara la cadena con su reverso.,O(n),O(1)
+ex_0083,facil,arrays,"Dado un entero n y una lista de puntos, imprime la suma de los valores positivos.",Un entero n seguido de n enteros.,La suma de los valores positivos.,"1 <= n <= 100000
+Los valores pueden ser negativos.","8
+-5 4 -10 -2 6 -5 6 -7",16,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(sum(x for x in nums if x > 0))
+",Se recorre la lista y se acumulan solo los valores mayores que cero.,O(n),O(1)
+ex_0084,facil,strings,Determina si una cadena es un palíndromo exacto.,Una línea con una cadena sin espacios.,"Imprime SI si es palíndromo, en caso contrario NO.",1 <= longitud <= 100000,casa,NO,"s = input().strip()
+print(""SI"" if s == s[::-1] else ""NO"")
+",Se compara la cadena con su reverso.,O(n),O(1)
+ex_0085,facil,strings,Cuenta cuántas vocales hay en una cadena.,Una línea con una cadena de texto.,El número total de vocales.,1 <= longitud <= 100000,computadora,5,"s = input().strip()
+print(sum(1 for c in s if c in ""aeiouáéíóúAEIOUÁÉÍÓÚ""))
+",Se recorre la cadena y se cuentan los caracteres que son vocal.,O(n),O(1)
+ex_0086,facil,strings,Determina si una cadena es un palíndromo exacto.,Una línea con una cadena sin espacios.,"Imprime SI si es palíndromo, en caso contrario NO.",1 <= longitud <= 100000,nivel,NO,"s = input().strip()
+print(""SI"" if s == s[::-1] else ""NO"")
+",Se compara la cadena con su reverso.,O(n),O(1)
+ex_0087,facil,arrays,"Dado un entero n y una lista de mediciones, imprime la suma de los valores positivos.",Un entero n seguido de n enteros.,La suma de los valores positivos.,"1 <= n <= 100000
+Los valores pueden ser negativos.","7
+5 -10 -7 1 -1 -3 -9",6,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(sum(x for x in nums if x > 0))
+",Se recorre la lista y se acumulan solo los valores mayores que cero.,O(n),O(1)
+ex_0088,facil,strings,Cuenta cuántas vocales hay en una cadena.,Una línea con una cadena de texto.,El número total de vocales.,1 <= longitud <= 100000,datos,2,"s = input().strip()
+print(sum(1 for c in s if c in ""aeiouáéíóúAEIOUÁÉÍÓÚ""))
+",Se recorre la cadena y se cuentan los caracteres que son vocal.,O(n),O(1)
+ex_0089,facil,arrays,"Dado un entero n y una lista de ventas diarias, imprime la suma de los valores positivos.",Un entero n seguido de n enteros.,La suma de los valores positivos.,"1 <= n <= 100000
+Los valores pueden ser negativos.","8
+-8 7 -6 -6 5 7 -5 -2",19,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(sum(x for x in nums if x > 0))
+",Se recorre la lista y se acumulan solo los valores mayores que cero.,O(n),O(1)
+ex_0090,facil,arrays,Encuentra el valor máximo de una lista de enteros.,Un entero n seguido de n enteros.,El valor máximo.,1 <= n <= 200000,"6
+19 46 43 38 -25 41",46,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(max(nums))
+",Se recorre la lista y se mantiene el máximo encontrado.,O(n),O(1)
+ex_0091,facil,strings,Determina si una cadena es un palíndromo exacto.,Una línea con una cadena sin espacios.,"Imprime SI si es palíndromo, en caso contrario NO.",1 <= longitud <= 100000,python,NO,"s = input().strip()
+print(""SI"" if s == s[::-1] else ""NO"")
+",Se compara la cadena con su reverso.,O(n),O(1)
+ex_0092,facil,strings,Determina si una cadena es un palíndromo exacto.,Una línea con una cadena sin espacios.,"Imprime SI si es palíndromo, en caso contrario NO.",1 <= longitud <= 100000,python,NO,"s = input().strip()
+print(""SI"" if s == s[::-1] else ""NO"")
+",Se compara la cadena con su reverso.,O(n),O(1)
+ex_0093,facil,arrays,Encuentra el valor máximo de una lista de enteros.,Un entero n seguido de n enteros.,El valor máximo.,1 <= n <= 200000,"5
+-19 -22 -42 -7 -48",-7,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(max(nums))
+",Se recorre la lista y se mantiene el máximo encontrado.,O(n),O(1)
+ex_0094,facil,strings,Cuenta cuántas vocales hay en una cadena.,Una línea con una cadena de texto.,El número total de vocales.,1 <= longitud <= 100000,datos,2,"s = input().strip()
+print(sum(1 for c in s if c in ""aeiouáéíóúAEIOUÁÉÍÓÚ""))
+",Se recorre la cadena y se cuentan los caracteres que son vocal.,O(n),O(1)
+ex_0095,facil,strings,Cuenta cuántas vocales hay en una cadena.,Una línea con una cadena de texto.,El número total de vocales.,1 <= longitud <= 100000,programacion,5,"s = input().strip()
+print(sum(1 for c in s if c in ""aeiouáéíóúAEIOUÁÉÍÓÚ""))
+",Se recorre la cadena y se cuentan los caracteres que son vocal.,O(n),O(1)
+ex_0096,facil,arrays,"Dado un entero n y una lista de ventas diarias, imprime la suma de los valores positivos.",Un entero n seguido de n enteros.,La suma de los valores positivos.,"1 <= n <= 100000
+Los valores pueden ser negativos.","6
+-8 -9 0 -8 6 -3",6,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(sum(x for x in nums if x > 0))
+",Se recorre la lista y se acumulan solo los valores mayores que cero.,O(n),O(1)
+ex_0097,facil,strings,Determina si una cadena es un palíndromo exacto.,Una línea con una cadena sin espacios.,"Imprime SI si es palíndromo, en caso contrario NO.",1 <= longitud <= 100000,python,NO,"s = input().strip()
+print(""SI"" if s == s[::-1] else ""NO"")
+",Se compara la cadena con su reverso.,O(n),O(1)
+ex_0098,facil,strings,Cuenta cuántas vocales hay en una cadena.,Una línea con una cadena de texto.,El número total de vocales.,1 <= longitud <= 100000,datos,2,"s = input().strip()
+print(sum(1 for c in s if c in ""aeiouáéíóúAEIOUÁÉÍÓÚ""))
+",Se recorre la cadena y se cuentan los caracteres que son vocal.,O(n),O(1)
+ex_0099,facil,strings,Cuenta cuántas vocales hay en una cadena.,Una línea con una cadena de texto.,El número total de vocales.,1 <= longitud <= 100000,academia,5,"s = input().strip()
+print(sum(1 for c in s if c in ""aeiouáéíóúAEIOUÁÉÍÓÚ""))
+",Se recorre la cadena y se cuentan los caracteres que son vocal.,O(n),O(1)
+ex_0100,facil,arrays,Encuentra el valor máximo de una lista de enteros.,Un entero n seguido de n enteros.,El valor máximo.,1 <= n <= 200000,"6
+50 10 2 -26 -38 -38",50,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(max(nums))
+",Se recorre la lista y se mantiene el máximo encontrado.,O(n),O(1)
+ex_0101,facil,arrays,Encuentra el valor máximo de una lista de enteros.,Un entero n seguido de n enteros.,El valor máximo.,1 <= n <= 200000,"7
+4 2 9 43 -44 36 33",43,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(max(nums))
+",Se recorre la lista y se mantiene el máximo encontrado.,O(n),O(1)
+ex_0102,facil,arrays,"Dado un entero n y una lista de ventas diarias, imprime la suma de los valores positivos.",Un entero n seguido de n enteros.,La suma de los valores positivos.,"1 <= n <= 100000
+Los valores pueden ser negativos.","8
+0 -7 -3 -4 -4 7 4 -6",11,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(sum(x for x in nums if x > 0))
+",Se recorre la lista y se acumulan solo los valores mayores que cero.,O(n),O(1)
+ex_0103,facil,arrays,Encuentra el valor máximo de una lista de enteros.,Un entero n seguido de n enteros.,El valor máximo.,1 <= n <= 200000,"6
+-15 9 -19 -41 6 20",20,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(max(nums))
+",Se recorre la lista y se mantiene el máximo encontrado.,O(n),O(1)
+ex_0104,facil,arrays,"Dado un entero n y una lista de ventas diarias, imprime la suma de los valores positivos.",Un entero n seguido de n enteros.,La suma de los valores positivos.,"1 <= n <= 100000
+Los valores pueden ser negativos.","5
+-8 -3 -5 3 5",8,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+print(sum(x for x in nums if x > 0))
+",Se recorre la lista y se acumulan solo los valores mayores que cero.,O(n),O(1)
+ex_0105,intermedio,sorting,"Dado un conjunto de intervalos, combina los que se traslapan.",Un entero n y luego n líneas con intervalos [inicio fin].,Primero el número de intervalos resultantes y luego cada intervalo.,"1 <= n <= 200000
+1 <= inicio <= fin <= 10^9","4
+1 3
+2 6
+8 10
+15 18","3
+1 6
+8 10
+15 18","import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+vals = data[1:]
+intervals = [(vals[i], vals[i+1]) for i in range(0, 2*n, 2)]
+intervals.sort()
+merged = []
+for a, b in intervals:
+    if not merged or a > merged[-1][1]:
+        merged.append([a, b])
+    else:
+        merged[-1][1] = max(merged[-1][1], b)
+print(len(merged))
+for a, b in merged:
+    print(a, b)
+",Se ordenan los intervalos y se fusionan de izquierda a derecha.,O(n log n),O(n)
+ex_0106,intermedio,sliding_window,Calcula la longitud de la subcadena sin caracteres repetidos más larga.,Una cadena s.,La longitud máxima.,1 <= longitud <= 200000,abcabcbb,3,"s = input().strip()
+last = {}
+left = 0
+best = 0
+for right, ch in enumerate(s):
+    if ch in last and last[ch] >= left:
+        left = last[ch] + 1
+    last[ch] = right
+    best = max(best, right - left + 1)
+print(best)
+",Ventana deslizante que se ajusta cuando se repite un caracter.,O(n),O(n)
+ex_0107,intermedio,hash_map,"Dado un arreglo y un objetivo, encuentra dos índices con suma igual al objetivo.","Un entero n, luego n enteros, y finalmente el objetivo.",Dos índices (0-based) separados por espacio.,"2 <= n <= 200000
+Existe exactamente una solución.","5
+7 1 7 5 8
+12",2 3,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+target = data[1+n]
+seen = {}
+for idx, x in enumerate(nums):
+    need = target - x
+    if need in seen:
+        print(seen[need], idx)
+        break
+    seen[x] = idx
+",Se usa un mapa para verificar en O(1) si el complemento ya apareció.,O(n),O(n)
+ex_0108,intermedio,sorting,"Dado un conjunto de intervalos, combina los que se traslapan.",Un entero n y luego n líneas con intervalos [inicio fin].,Primero el número de intervalos resultantes y luego cada intervalo.,"1 <= n <= 200000
+1 <= inicio <= fin <= 10^9","4
+1 3
+2 6
+8 10
+15 18","3
+1 6
+8 10
+15 18","import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+vals = data[1:]
+intervals = [(vals[i], vals[i+1]) for i in range(0, 2*n, 2)]
+intervals.sort()
+merged = []
+for a, b in intervals:
+    if not merged or a > merged[-1][1]:
+        merged.append([a, b])
+    else:
+        merged[-1][1] = max(merged[-1][1], b)
+print(len(merged))
+for a, b in merged:
+    print(a, b)
+",Se ordenan los intervalos y se fusionan de izquierda a derecha.,O(n log n),O(n)
+ex_0109,intermedio,sliding_window,Calcula la longitud de la subcadena sin caracteres repetidos más larga.,Una cadena s.,La longitud máxima.,1 <= longitud <= 200000,bbbca,3,"s = input().strip()
+last = {}
+left = 0
+best = 0
+for right, ch in enumerate(s):
+    if ch in last and last[ch] >= left:
+        left = last[ch] + 1
+    last[ch] = right
+    best = max(best, right - left + 1)
+print(best)
+",Ventana deslizante que se ajusta cuando se repite un caracter.,O(n),O(n)
+ex_0110,intermedio,stack,Verifica si una cadena de paréntesis y llaves está balanceada.,Una cadena con caracteres ()[]{}.,"SI si está balanceada, de lo contrario NO.",1 <= longitud <= 200000,([{}]),SI,"s = input().strip()
+pairs = {')': '(', ']': '[', '}': '{'}
+stack = []
+for ch in s:
+    if ch in ""([{"":
+        stack.append(ch)
+    elif ch in pairs:
+        if not stack or stack[-1] != pairs[ch]:
+            print(""NO"")
+            break
+        stack.pop()
+else:
+    print(""SI"" if not stack else ""NO"")
+",Se usa una pila para validar el cierre correcto de símbolos.,O(n),O(n)
+ex_0111,intermedio,hash_map,"Dado un arreglo y un objetivo, encuentra dos índices con suma igual al objetivo.","Un entero n, luego n enteros, y finalmente el objetivo.",Dos índices (0-based) separados por espacio.,"2 <= n <= 200000
+Existe exactamente una solución.","7
+9 1 6 1 1 8 9
+10",6 4,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+target = data[1+n]
+seen = {}
+for idx, x in enumerate(nums):
+    need = target - x
+    if need in seen:
+        print(seen[need], idx)
+        break
+    seen[x] = idx
+",Se usa un mapa para verificar en O(1) si el complemento ya apareció.,O(n),O(n)
+ex_0112,intermedio,sliding_window,Calcula la longitud de la subcadena sin caracteres repetidos más larga.,Una cadena s.,La longitud máxima.,1 <= longitud <= 200000,abcaefg,6,"s = input().strip()
+last = {}
+left = 0
+best = 0
+for right, ch in enumerate(s):
+    if ch in last and last[ch] >= left:
+        left = last[ch] + 1
+    last[ch] = right
+    best = max(best, right - left + 1)
+print(best)
+",Ventana deslizante que se ajusta cuando se repite un caracter.,O(n),O(n)
+ex_0113,intermedio,hash_map,"Dado un arreglo y un objetivo, encuentra dos índices con suma igual al objetivo.","Un entero n, luego n enteros, y finalmente el objetivo.",Dos índices (0-based) separados por espacio.,"2 <= n <= 200000
+Existe exactamente una solución.","5
+2 2 4 7 2
+4",4 1,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+target = data[1+n]
+seen = {}
+for idx, x in enumerate(nums):
+    need = target - x
+    if need in seen:
+        print(seen[need], idx)
+        break
+    seen[x] = idx
+",Se usa un mapa para verificar en O(1) si el complemento ya apareció.,O(n),O(n)
+ex_0114,intermedio,hash_map,"Dado un arreglo y un objetivo, encuentra dos índices con suma igual al objetivo.","Un entero n, luego n enteros, y finalmente el objetivo.",Dos índices (0-based) separados por espacio.,"2 <= n <= 200000
+Existe exactamente una solución.","7
+2 7 9 6 5 4 6
+16",1 2,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+target = data[1+n]
+seen = {}
+for idx, x in enumerate(nums):
+    need = target - x
+    if need in seen:
+        print(seen[need], idx)
+        break
+    seen[x] = idx
+",Se usa un mapa para verificar en O(1) si el complemento ya apareció.,O(n),O(n)
+ex_0115,intermedio,sorting,"Dado un conjunto de intervalos, combina los que se traslapan.",Un entero n y luego n líneas con intervalos [inicio fin].,Primero el número de intervalos resultantes y luego cada intervalo.,"1 <= n <= 200000
+1 <= inicio <= fin <= 10^9","4
+1 3
+2 6
+8 10
+15 18","3
+1 6
+8 10
+15 18","import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+vals = data[1:]
+intervals = [(vals[i], vals[i+1]) for i in range(0, 2*n, 2)]
+intervals.sort()
+merged = []
+for a, b in intervals:
+    if not merged or a > merged[-1][1]:
+        merged.append([a, b])
+    else:
+        merged[-1][1] = max(merged[-1][1], b)
+print(len(merged))
+for a, b in merged:
+    print(a, b)
+",Se ordenan los intervalos y se fusionan de izquierda a derecha.,O(n log n),O(n)
+ex_0116,intermedio,sliding_window,Calcula la longitud de la subcadena sin caracteres repetidos más larga.,Una cadena s.,La longitud máxima.,1 <= longitud <= 200000,pwwkew,3,"s = input().strip()
+last = {}
+left = 0
+best = 0
+for right, ch in enumerate(s):
+    if ch in last and last[ch] >= left:
+        left = last[ch] + 1
+    last[ch] = right
+    best = max(best, right - left + 1)
+print(best)
+",Ventana deslizante que se ajusta cuando se repite un caracter.,O(n),O(n)
+ex_0117,intermedio,sorting,"Dado un conjunto de intervalos, combina los que se traslapan.",Un entero n y luego n líneas con intervalos [inicio fin].,Primero el número de intervalos resultantes y luego cada intervalo.,"1 <= n <= 200000
+1 <= inicio <= fin <= 10^9","4
+1 3
+2 6
+8 10
+15 18","3
+1 6
+8 10
+15 18","import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+vals = data[1:]
+intervals = [(vals[i], vals[i+1]) for i in range(0, 2*n, 2)]
+intervals.sort()
+merged = []
+for a, b in intervals:
+    if not merged or a > merged[-1][1]:
+        merged.append([a, b])
+    else:
+        merged[-1][1] = max(merged[-1][1], b)
+print(len(merged))
+for a, b in merged:
+    print(a, b)
+",Se ordenan los intervalos y se fusionan de izquierda a derecha.,O(n log n),O(n)
+ex_0118,intermedio,stack,Verifica si una cadena de paréntesis y llaves está balanceada.,Una cadena con caracteres ()[]{}.,"SI si está balanceada, de lo contrario NO.",1 <= longitud <= 200000,()[]{},SI,"s = input().strip()
+pairs = {')': '(', ']': '[', '}': '{'}
+stack = []
+for ch in s:
+    if ch in ""([{"":
+        stack.append(ch)
+    elif ch in pairs:
+        if not stack or stack[-1] != pairs[ch]:
+            print(""NO"")
+            break
+        stack.pop()
+else:
+    print(""SI"" if not stack else ""NO"")
+",Se usa una pila para validar el cierre correcto de símbolos.,O(n),O(n)
+ex_0119,intermedio,hash_map,"Dado un arreglo y un objetivo, encuentra dos índices con suma igual al objetivo.","Un entero n, luego n enteros, y finalmente el objetivo.",Dos índices (0-based) separados por espacio.,"2 <= n <= 200000
+Existe exactamente una solución.","6
+2 2 9 4 9 5
+11",1 2,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+target = data[1+n]
+seen = {}
+for idx, x in enumerate(nums):
+    need = target - x
+    if need in seen:
+        print(seen[need], idx)
+        break
+    seen[x] = idx
+",Se usa un mapa para verificar en O(1) si el complemento ya apareció.,O(n),O(n)
+ex_0120,intermedio,hash_map,"Dado un arreglo y un objetivo, encuentra dos índices con suma igual al objetivo.","Un entero n, luego n enteros, y finalmente el objetivo.",Dos índices (0-based) separados por espacio.,"2 <= n <= 200000
+Existe exactamente una solución.","5
+6 5 3 8 9
+9",2 0,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+target = data[1+n]
+seen = {}
+for idx, x in enumerate(nums):
+    need = target - x
+    if need in seen:
+        print(seen[need], idx)
+        break
+    seen[x] = idx
+",Se usa un mapa para verificar en O(1) si el complemento ya apareció.,O(n),O(n)
+ex_0121,intermedio,stack,Verifica si una cadena de paréntesis y llaves está balanceada.,Una cadena con caracteres ()[]{}.,"SI si está balanceada, de lo contrario NO.",1 <= longitud <= 200000,()[]{},SI,"s = input().strip()
+pairs = {')': '(', ']': '[', '}': '{'}
+stack = []
+for ch in s:
+    if ch in ""([{"":
+        stack.append(ch)
+    elif ch in pairs:
+        if not stack or stack[-1] != pairs[ch]:
+            print(""NO"")
+            break
+        stack.pop()
+else:
+    print(""SI"" if not stack else ""NO"")
+",Se usa una pila para validar el cierre correcto de símbolos.,O(n),O(n)
+ex_0122,intermedio,sliding_window,Calcula la longitud de la subcadena sin caracteres repetidos más larga.,Una cadena s.,La longitud máxima.,1 <= longitud <= 200000,pwwkew,3,"s = input().strip()
+last = {}
+left = 0
+best = 0
+for right, ch in enumerate(s):
+    if ch in last and last[ch] >= left:
+        left = last[ch] + 1
+    last[ch] = right
+    best = max(best, right - left + 1)
+print(best)
+",Ventana deslizante que se ajusta cuando se repite un caracter.,O(n),O(n)
+ex_0123,intermedio,hash_map,"Dado un arreglo y un objetivo, encuentra dos índices con suma igual al objetivo.","Un entero n, luego n enteros, y finalmente el objetivo.",Dos índices (0-based) separados por espacio.,"2 <= n <= 200000
+Existe exactamente una solución.","5
+9 3 5 5 4
+8",2 1,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+target = data[1+n]
+seen = {}
+for idx, x in enumerate(nums):
+    need = target - x
+    if need in seen:
+        print(seen[need], idx)
+        break
+    seen[x] = idx
+",Se usa un mapa para verificar en O(1) si el complemento ya apareció.,O(n),O(n)
+ex_0124,intermedio,stack,Verifica si una cadena de paréntesis y llaves está balanceada.,Una cadena con caracteres ()[]{}.,"SI si está balanceada, de lo contrario NO.",1 <= longitud <= 200000,{[()()]},SI,"s = input().strip()
+pairs = {')': '(', ']': '[', '}': '{'}
+stack = []
+for ch in s:
+    if ch in ""([{"":
+        stack.append(ch)
+    elif ch in pairs:
+        if not stack or stack[-1] != pairs[ch]:
+            print(""NO"")
+            break
+        stack.pop()
+else:
+    print(""SI"" if not stack else ""NO"")
+",Se usa una pila para validar el cierre correcto de símbolos.,O(n),O(n)
+ex_0125,intermedio,sorting,"Dado un conjunto de intervalos, combina los que se traslapan.",Un entero n y luego n líneas con intervalos [inicio fin].,Primero el número de intervalos resultantes y luego cada intervalo.,"1 <= n <= 200000
+1 <= inicio <= fin <= 10^9","4
+1 3
+2 6
+8 10
+15 18","3
+1 6
+8 10
+15 18","import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+vals = data[1:]
+intervals = [(vals[i], vals[i+1]) for i in range(0, 2*n, 2)]
+intervals.sort()
+merged = []
+for a, b in intervals:
+    if not merged or a > merged[-1][1]:
+        merged.append([a, b])
+    else:
+        merged[-1][1] = max(merged[-1][1], b)
+print(len(merged))
+for a, b in merged:
+    print(a, b)
+",Se ordenan los intervalos y se fusionan de izquierda a derecha.,O(n log n),O(n)
+ex_0126,intermedio,stack,Verifica si una cadena de paréntesis y llaves está balanceada.,Una cadena con caracteres ()[]{}.,"SI si está balanceada, de lo contrario NO.",1 <= longitud <= 200000,()[]{},SI,"s = input().strip()
+pairs = {')': '(', ']': '[', '}': '{'}
+stack = []
+for ch in s:
+    if ch in ""([{"":
+        stack.append(ch)
+    elif ch in pairs:
+        if not stack or stack[-1] != pairs[ch]:
+            print(""NO"")
+            break
+        stack.pop()
+else:
+    print(""SI"" if not stack else ""NO"")
+",Se usa una pila para validar el cierre correcto de símbolos.,O(n),O(n)
+ex_0127,intermedio,hash_map,"Dado un arreglo y un objetivo, encuentra dos índices con suma igual al objetivo.","Un entero n, luego n enteros, y finalmente el objetivo.",Dos índices (0-based) separados por espacio.,"2 <= n <= 200000
+Existe exactamente una solución.","7
+7 5 1 1 6 3 5
+8",1 5,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+target = data[1+n]
+seen = {}
+for idx, x in enumerate(nums):
+    need = target - x
+    if need in seen:
+        print(seen[need], idx)
+        break
+    seen[x] = idx
+",Se usa un mapa para verificar en O(1) si el complemento ya apareció.,O(n),O(n)
+ex_0128,intermedio,sorting,"Dado un conjunto de intervalos, combina los que se traslapan.",Un entero n y luego n líneas con intervalos [inicio fin].,Primero el número de intervalos resultantes y luego cada intervalo.,"1 <= n <= 200000
+1 <= inicio <= fin <= 10^9","4
+1 3
+2 6
+8 10
+15 18","3
+1 6
+8 10
+15 18","import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+vals = data[1:]
+intervals = [(vals[i], vals[i+1]) for i in range(0, 2*n, 2)]
+intervals.sort()
+merged = []
+for a, b in intervals:
+    if not merged or a > merged[-1][1]:
+        merged.append([a, b])
+    else:
+        merged[-1][1] = max(merged[-1][1], b)
+print(len(merged))
+for a, b in merged:
+    print(a, b)
+",Se ordenan los intervalos y se fusionan de izquierda a derecha.,O(n log n),O(n)
+ex_0129,intermedio,sorting,"Dado un conjunto de intervalos, combina los que se traslapan.",Un entero n y luego n líneas con intervalos [inicio fin].,Primero el número de intervalos resultantes y luego cada intervalo.,"1 <= n <= 200000
+1 <= inicio <= fin <= 10^9","4
+1 3
+2 6
+8 10
+15 18","3
+1 6
+8 10
+15 18","import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+vals = data[1:]
+intervals = [(vals[i], vals[i+1]) for i in range(0, 2*n, 2)]
+intervals.sort()
+merged = []
+for a, b in intervals:
+    if not merged or a > merged[-1][1]:
+        merged.append([a, b])
+    else:
+        merged[-1][1] = max(merged[-1][1], b)
+print(len(merged))
+for a, b in merged:
+    print(a, b)
+",Se ordenan los intervalos y se fusionan de izquierda a derecha.,O(n log n),O(n)
+ex_0130,intermedio,hash_map,"Dado un arreglo y un objetivo, encuentra dos índices con suma igual al objetivo.","Un entero n, luego n enteros, y finalmente el objetivo.",Dos índices (0-based) separados por espacio.,"2 <= n <= 200000
+Existe exactamente una solución.","5
+2 3 9 1 6
+9",4 1,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+target = data[1+n]
+seen = {}
+for idx, x in enumerate(nums):
+    need = target - x
+    if need in seen:
+        print(seen[need], idx)
+        break
+    seen[x] = idx
+",Se usa un mapa para verificar en O(1) si el complemento ya apareció.,O(n),O(n)
+ex_0131,intermedio,sorting,"Dado un conjunto de intervalos, combina los que se traslapan.",Un entero n y luego n líneas con intervalos [inicio fin].,Primero el número de intervalos resultantes y luego cada intervalo.,"1 <= n <= 200000
+1 <= inicio <= fin <= 10^9","4
+1 3
+2 6
+8 10
+15 18","3
+1 6
+8 10
+15 18","import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+vals = data[1:]
+intervals = [(vals[i], vals[i+1]) for i in range(0, 2*n, 2)]
+intervals.sort()
+merged = []
+for a, b in intervals:
+    if not merged or a > merged[-1][1]:
+        merged.append([a, b])
+    else:
+        merged[-1][1] = max(merged[-1][1], b)
+print(len(merged))
+for a, b in merged:
+    print(a, b)
+",Se ordenan los intervalos y se fusionan de izquierda a derecha.,O(n log n),O(n)
+ex_0132,intermedio,sliding_window,Calcula la longitud de la subcadena sin caracteres repetidos más larga.,Una cadena s.,La longitud máxima.,1 <= longitud <= 200000,abcaefg,6,"s = input().strip()
+last = {}
+left = 0
+best = 0
+for right, ch in enumerate(s):
+    if ch in last and last[ch] >= left:
+        left = last[ch] + 1
+    last[ch] = right
+    best = max(best, right - left + 1)
+print(best)
+",Ventana deslizante que se ajusta cuando se repite un caracter.,O(n),O(n)
+ex_0133,intermedio,stack,Verifica si una cadena de paréntesis y llaves está balanceada.,Una cadena con caracteres ()[]{}.,"SI si está balanceada, de lo contrario NO.",1 <= longitud <= 200000,([)],NO,"s = input().strip()
+pairs = {')': '(', ']': '[', '}': '{'}
+stack = []
+for ch in s:
+    if ch in ""([{"":
+        stack.append(ch)
+    elif ch in pairs:
+        if not stack or stack[-1] != pairs[ch]:
+            print(""NO"")
+            break
+        stack.pop()
+else:
+    print(""SI"" if not stack else ""NO"")
+",Se usa una pila para validar el cierre correcto de símbolos.,O(n),O(n)
+ex_0134,intermedio,hash_map,"Dado un arreglo y un objetivo, encuentra dos índices con suma igual al objetivo.","Un entero n, luego n enteros, y finalmente el objetivo.",Dos índices (0-based) separados por espacio.,"2 <= n <= 200000
+Existe exactamente una solución.","6
+4 4 2 6 9 7
+13",4 1,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+target = data[1+n]
+seen = {}
+for idx, x in enumerate(nums):
+    need = target - x
+    if need in seen:
+        print(seen[need], idx)
+        break
+    seen[x] = idx
+",Se usa un mapa para verificar en O(1) si el complemento ya apareció.,O(n),O(n)
+ex_0135,intermedio,sliding_window,Calcula la longitud de la subcadena sin caracteres repetidos más larga.,Una cadena s.,La longitud máxima.,1 <= longitud <= 200000,bbbca,3,"s = input().strip()
+last = {}
+left = 0
+best = 0
+for right, ch in enumerate(s):
+    if ch in last and last[ch] >= left:
+        left = last[ch] + 1
+    last[ch] = right
+    best = max(best, right - left + 1)
+print(best)
+",Ventana deslizante que se ajusta cuando se repite un caracter.,O(n),O(n)
+ex_0136,intermedio,sliding_window,Calcula la longitud de la subcadena sin caracteres repetidos más larga.,Una cadena s.,La longitud máxima.,1 <= longitud <= 200000,abcabcbb,3,"s = input().strip()
+last = {}
+left = 0
+best = 0
+for right, ch in enumerate(s):
+    if ch in last and last[ch] >= left:
+        left = last[ch] + 1
+    last[ch] = right
+    best = max(best, right - left + 1)
+print(best)
+",Ventana deslizante que se ajusta cuando se repite un caracter.,O(n),O(n)
+ex_0137,intermedio,hash_map,"Dado un arreglo y un objetivo, encuentra dos índices con suma igual al objetivo.","Un entero n, luego n enteros, y finalmente el objetivo.",Dos índices (0-based) separados por espacio.,"2 <= n <= 200000
+Existe exactamente una solución.","5
+6 7 4 5 3
+11",0 3,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+target = data[1+n]
+seen = {}
+for idx, x in enumerate(nums):
+    need = target - x
+    if need in seen:
+        print(seen[need], idx)
+        break
+    seen[x] = idx
+",Se usa un mapa para verificar en O(1) si el complemento ya apareció.,O(n),O(n)
+ex_0138,intermedio,hash_map,"Dado un arreglo y un objetivo, encuentra dos índices con suma igual al objetivo.","Un entero n, luego n enteros, y finalmente el objetivo.",Dos índices (0-based) separados por espacio.,"2 <= n <= 200000
+Existe exactamente una solución.","6
+4 4 8 6 5 4
+8",1 0,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+target = data[1+n]
+seen = {}
+for idx, x in enumerate(nums):
+    need = target - x
+    if need in seen:
+        print(seen[need], idx)
+        break
+    seen[x] = idx
+",Se usa un mapa para verificar en O(1) si el complemento ya apareció.,O(n),O(n)
+ex_0139,intermedio,sliding_window,Calcula la longitud de la subcadena sin caracteres repetidos más larga.,Una cadena s.,La longitud máxima.,1 <= longitud <= 200000,abcabcbb,3,"s = input().strip()
+last = {}
+left = 0
+best = 0
+for right, ch in enumerate(s):
+    if ch in last and last[ch] >= left:
+        left = last[ch] + 1
+    last[ch] = right
+    best = max(best, right - left + 1)
+print(best)
+",Ventana deslizante que se ajusta cuando se repite un caracter.,O(n),O(n)
+ex_0140,intermedio,stack,Verifica si una cadena de paréntesis y llaves está balanceada.,Una cadena con caracteres ()[]{}.,"SI si está balanceada, de lo contrario NO.",1 <= longitud <= 200000,([)],NO,"s = input().strip()
+pairs = {')': '(', ']': '[', '}': '{'}
+stack = []
+for ch in s:
+    if ch in ""([{"":
+        stack.append(ch)
+    elif ch in pairs:
+        if not stack or stack[-1] != pairs[ch]:
+            print(""NO"")
+            break
+        stack.pop()
+else:
+    print(""SI"" if not stack else ""NO"")
+",Se usa una pila para validar el cierre correcto de símbolos.,O(n),O(n)
+ex_0141,intermedio,hash_map,"Dado un arreglo y un objetivo, encuentra dos índices con suma igual al objetivo.","Un entero n, luego n enteros, y finalmente el objetivo.",Dos índices (0-based) separados por espacio.,"2 <= n <= 200000
+Existe exactamente una solución.","6
+6 9 7 9 6 1
+13",0 2,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+target = data[1+n]
+seen = {}
+for idx, x in enumerate(nums):
+    need = target - x
+    if need in seen:
+        print(seen[need], idx)
+        break
+    seen[x] = idx
+",Se usa un mapa para verificar en O(1) si el complemento ya apareció.,O(n),O(n)
+ex_0142,intermedio,sliding_window,Calcula la longitud de la subcadena sin caracteres repetidos más larga.,Una cadena s.,La longitud máxima.,1 <= longitud <= 200000,cadaba,3,"s = input().strip()
+last = {}
+left = 0
+best = 0
+for right, ch in enumerate(s):
+    if ch in last and last[ch] >= left:
+        left = last[ch] + 1
+    last[ch] = right
+    best = max(best, right - left + 1)
+print(best)
+",Ventana deslizante que se ajusta cuando se repite un caracter.,O(n),O(n)
+ex_0143,intermedio,stack,Verifica si una cadena de paréntesis y llaves está balanceada.,Una cadena con caracteres ()[]{}.,"SI si está balanceada, de lo contrario NO.",1 <= longitud <= 200000,()[]{},SI,"s = input().strip()
+pairs = {')': '(', ']': '[', '}': '{'}
+stack = []
+for ch in s:
+    if ch in ""([{"":
+        stack.append(ch)
+    elif ch in pairs:
+        if not stack or stack[-1] != pairs[ch]:
+            print(""NO"")
+            break
+        stack.pop()
+else:
+    print(""SI"" if not stack else ""NO"")
+",Se usa una pila para validar el cierre correcto de símbolos.,O(n),O(n)
+ex_0144,intermedio,hash_map,"Dado un arreglo y un objetivo, encuentra dos índices con suma igual al objetivo.","Un entero n, luego n enteros, y finalmente el objetivo.",Dos índices (0-based) separados por espacio.,"2 <= n <= 200000
+Existe exactamente una solución.","7
+7 6 6 7 9 2 7
+15",4 1,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+target = data[1+n]
+seen = {}
+for idx, x in enumerate(nums):
+    need = target - x
+    if need in seen:
+        print(seen[need], idx)
+        break
+    seen[x] = idx
+",Se usa un mapa para verificar en O(1) si el complemento ya apareció.,O(n),O(n)
+ex_0145,intermedio,stack,Verifica si una cadena de paréntesis y llaves está balanceada.,Una cadena con caracteres ()[]{}.,"SI si está balanceada, de lo contrario NO.",1 <= longitud <= 200000,()[]{},SI,"s = input().strip()
+pairs = {')': '(', ']': '[', '}': '{'}
+stack = []
+for ch in s:
+    if ch in ""([{"":
+        stack.append(ch)
+    elif ch in pairs:
+        if not stack or stack[-1] != pairs[ch]:
+            print(""NO"")
+            break
+        stack.pop()
+else:
+    print(""SI"" if not stack else ""NO"")
+",Se usa una pila para validar el cierre correcto de símbolos.,O(n),O(n)
+ex_0146,intermedio,sorting,"Dado un conjunto de intervalos, combina los que se traslapan.",Un entero n y luego n líneas con intervalos [inicio fin].,Primero el número de intervalos resultantes y luego cada intervalo.,"1 <= n <= 200000
+1 <= inicio <= fin <= 10^9","4
+1 3
+2 6
+8 10
+15 18","3
+1 6
+8 10
+15 18","import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+vals = data[1:]
+intervals = [(vals[i], vals[i+1]) for i in range(0, 2*n, 2)]
+intervals.sort()
+merged = []
+for a, b in intervals:
+    if not merged or a > merged[-1][1]:
+        merged.append([a, b])
+    else:
+        merged[-1][1] = max(merged[-1][1], b)
+print(len(merged))
+for a, b in merged:
+    print(a, b)
+",Se ordenan los intervalos y se fusionan de izquierda a derecha.,O(n log n),O(n)
+ex_0147,intermedio,hash_map,"Dado un arreglo y un objetivo, encuentra dos índices con suma igual al objetivo.","Un entero n, luego n enteros, y finalmente el objetivo.",Dos índices (0-based) separados por espacio.,"2 <= n <= 200000
+Existe exactamente una solución.","7
+9 4 6 7 2 6 6
+15",5 0,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+n = data[0]
+nums = data[1:1+n]
+target = data[1+n]
+seen = {}
+for idx, x in enumerate(nums):
+    need = target - x
+    if need in seen:
+        print(seen[need], idx)
+        break
+    seen[x] = idx
+",Se usa un mapa para verificar en O(1) si el complemento ya apareció.,O(n),O(n)
+ex_0148,intermedio,stack,Verifica si una cadena de paréntesis y llaves está balanceada.,Una cadena con caracteres ()[]{}.,"SI si está balanceada, de lo contrario NO.",1 <= longitud <= 200000,{[()()]},SI,"s = input().strip()
+pairs = {')': '(', ']': '[', '}': '{'}
+stack = []
+for ch in s:
+    if ch in ""([{"":
+        stack.append(ch)
+    elif ch in pairs:
+        if not stack or stack[-1] != pairs[ch]:
+            print(""NO"")
+            break
+        stack.pop()
+else:
+    print(""SI"" if not stack else ""NO"")
+",Se usa una pila para validar el cierre correcto de símbolos.,O(n),O(n)
+ex_0149,intermedio,stack,Verifica si una cadena de paréntesis y llaves está balanceada.,Una cadena con caracteres ()[]{}.,"SI si está balanceada, de lo contrario NO.",1 <= longitud <= 200000,((()),NO,"s = input().strip()
+pairs = {')': '(', ']': '[', '}': '{'}
+stack = []
+for ch in s:
+    if ch in ""([{"":
+        stack.append(ch)
+    elif ch in pairs:
+        if not stack or stack[-1] != pairs[ch]:
+            print(""NO"")
+            break
+        stack.pop()
+else:
+    print(""SI"" if not stack else ""NO"")
+",Se usa una pila para validar el cierre correcto de símbolos.,O(n),O(n)
+ex_0150,intermedio,stack,Verifica si una cadena de paréntesis y llaves está balanceada.,Una cadena con caracteres ()[]{}.,"SI si está balanceada, de lo contrario NO.",1 <= longitud <= 200000,((()),NO,"s = input().strip()
+pairs = {')': '(', ']': '[', '}': '{'}
+stack = []
+for ch in s:
+    if ch in ""([{"":
+        stack.append(ch)
+    elif ch in pairs:
+        if not stack or stack[-1] != pairs[ch]:
+            print(""NO"")
+            break
+        stack.pop()
+else:
+    print(""SI"" if not stack else ""NO"")
+",Se usa una pila para validar el cierre correcto de símbolos.,O(n),O(n)
+ex_0151,dificil,dp,Calcula la distancia de edición entre dos cadenas.,Dos líneas con cadenas a y b.,El número mínimo de operaciones de edición.,1 <= longitud <= 5000,"barco
+banco",1,"import sys
+
+a = sys.stdin.readline().strip()
+b = sys.stdin.readline().strip()
+if not a and not b:
+    raise SystemExit
+n, m = len(a), len(b)
+dp = [[0]*(m+1) for _ in range(n+1)]
+for i in range(n+1):
+    dp[i][0] = i
+for j in range(m+1):
+    dp[0][j] = j
+for i in range(1, n+1):
+    for j in range(1, m+1):
+        cost = 0 if a[i-1] == b[j-1] else 1
+        dp[i][j] = min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost)
+print(dp[n][m])
+",DP clásico donde dp[i][j] es la distancia entre prefijos.,O(n*m),O(n*m)
+ex_0152,dificil,graph,Obtén un orden topológico de un grafo dirigido acíclico.,"n m, seguido de m aristas dirigidas (u v).",Un orden topológico válido o CICLO si no existe.,"1 <= n <= 200000
+1 <= m <= 300000","6 6
+1 2
+1 3
+3 4
+2 4
+4 5
+5 6",1 2 3 4 5 6,"import sys
+from collections import deque
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it); m = next(it)
+indeg = [0]*(n+1)
+g = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it)
+    g[u].append(v)
+    indeg[v] += 1
+q = deque([i for i in range(1, n+1) if indeg[i] == 0])
+order = []
+while q:
+    u = q.popleft()
+    order.append(u)
+    for v in g[u]:
+        indeg[v] -= 1
+        if indeg[v] == 0:
+            q.append(v)
+if len(order) != n:
+    print(""CICLO"")
+else:
+    print("" "".join(map(str, order)))
+",Kahn: se toman nodos con indegree 0 hasta completar el orden.,O(n+m),O(n+m)
+ex_0153,dificil,graph,Obtén un orden topológico de un grafo dirigido acíclico.,"n m, seguido de m aristas dirigidas (u v).",Un orden topológico válido o CICLO si no existe.,"1 <= n <= 200000
+1 <= m <= 300000","6 6
+1 2
+1 3
+3 4
+2 4
+4 5
+5 6",1 2 3 4 5 6,"import sys
+from collections import deque
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it); m = next(it)
+indeg = [0]*(n+1)
+g = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it)
+    g[u].append(v)
+    indeg[v] += 1
+q = deque([i for i in range(1, n+1) if indeg[i] == 0])
+order = []
+while q:
+    u = q.popleft()
+    order.append(u)
+    for v in g[u]:
+        indeg[v] -= 1
+        if indeg[v] == 0:
+            q.append(v)
+if len(order) != n:
+    print(""CICLO"")
+else:
+    print("" "".join(map(str, order)))
+",Kahn: se toman nodos con indegree 0 hasta completar el orden.,O(n+m),O(n+m)
+ex_0154,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+7",6,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0155,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+7",6,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0156,dificil,graph,Obtén un orden topológico de un grafo dirigido acíclico.,"n m, seguido de m aristas dirigidas (u v).",Un orden topológico válido o CICLO si no existe.,"1 <= n <= 200000
+1 <= m <= 300000","6 6
+1 2
+1 3
+3 4
+2 4
+4 5
+5 6",1 2 3 4 5 6,"import sys
+from collections import deque
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it); m = next(it)
+indeg = [0]*(n+1)
+g = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it)
+    g[u].append(v)
+    indeg[v] += 1
+q = deque([i for i in range(1, n+1) if indeg[i] == 0])
+order = []
+while q:
+    u = q.popleft()
+    order.append(u)
+    for v in g[u]:
+        indeg[v] -= 1
+        if indeg[v] == 0:
+            q.append(v)
+if len(order) != n:
+    print(""CICLO"")
+else:
+    print("" "".join(map(str, order)))
+",Kahn: se toman nodos con indegree 0 hasta completar el orden.,O(n+m),O(n+m)
+ex_0157,dificil,dp,Calcula la distancia de edición entre dos cadenas.,Dos líneas con cadenas a y b.,El número mínimo de operaciones de edición.,1 <= longitud <= 5000,"casa
+caso",1,"import sys
+
+a = sys.stdin.readline().strip()
+b = sys.stdin.readline().strip()
+if not a and not b:
+    raise SystemExit
+n, m = len(a), len(b)
+dp = [[0]*(m+1) for _ in range(n+1)]
+for i in range(n+1):
+    dp[i][0] = i
+for j in range(m+1):
+    dp[0][j] = j
+for i in range(1, n+1):
+    for j in range(1, m+1):
+        cost = 0 if a[i-1] == b[j-1] else 1
+        dp[i][j] = min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost)
+print(dp[n][m])
+",DP clásico donde dp[i][j] es la distancia entre prefijos.,O(n*m),O(n*m)
+ex_0158,dificil,graph,Encuentra la distancia mínima entre dos nodos en un grafo ponderado no dirigido.,"n m, luego m aristas (u v w) y finalmente inicio y fin.","La distancia mínima, o -1 si no hay camino.","1 <= n <= 200000
+1 <= m <= 300000","5 6
+1 2 4
+1 3 2
+3 2 1
+2 4 7
+3 4 3
+4 5 1
+1 5",6,"import sys, heapq
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it)
+m = next(it)
+graph = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it); w = next(it)
+    graph[u].append((v, w))
+    graph[v].append((u, w))
+start = next(it); end = next(it)
+INF = 10**18
+dist = [INF]*(n+1)
+dist[start] = 0
+pq = [(0, start)]
+while pq:
+    d, u = heapq.heappop(pq)
+    if d != dist[u]:
+        continue
+    for v, w in graph[u]:
+        nd = d + w
+        if nd < dist[v]:
+            dist[v] = nd
+            heapq.heappush(pq, (nd, v))
+ans = dist[end] if dist[end] < INF else -1
+print(ans)
+",Dijkstra con cola de prioridad para obtener la distancia mínima.,O((n+m) log n),O(n+m)
+ex_0159,dificil,dp,Calcula la distancia de edición entre dos cadenas.,Dos líneas con cadenas a y b.,El número mínimo de operaciones de edición.,1 <= longitud <= 5000,"casa
+caso",1,"import sys
+
+a = sys.stdin.readline().strip()
+b = sys.stdin.readline().strip()
+if not a and not b:
+    raise SystemExit
+n, m = len(a), len(b)
+dp = [[0]*(m+1) for _ in range(n+1)]
+for i in range(n+1):
+    dp[i][0] = i
+for j in range(m+1):
+    dp[0][j] = j
+for i in range(1, n+1):
+    for j in range(1, m+1):
+        cost = 0 if a[i-1] == b[j-1] else 1
+        dp[i][j] = min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost)
+print(dp[n][m])
+",DP clásico donde dp[i][j] es la distancia entre prefijos.,O(n*m),O(n*m)
+ex_0160,dificil,graph,Obtén un orden topológico de un grafo dirigido acíclico.,"n m, seguido de m aristas dirigidas (u v).",Un orden topológico válido o CICLO si no existe.,"1 <= n <= 200000
+1 <= m <= 300000","6 6
+1 2
+1 3
+3 4
+2 4
+4 5
+5 6",1 2 3 4 5 6,"import sys
+from collections import deque
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it); m = next(it)
+indeg = [0]*(n+1)
+g = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it)
+    g[u].append(v)
+    indeg[v] += 1
+q = deque([i for i in range(1, n+1) if indeg[i] == 0])
+order = []
+while q:
+    u = q.popleft()
+    order.append(u)
+    for v in g[u]:
+        indeg[v] -= 1
+        if indeg[v] == 0:
+            q.append(v)
+if len(order) != n:
+    print(""CICLO"")
+else:
+    print("" "".join(map(str, order)))
+",Kahn: se toman nodos con indegree 0 hasta completar el orden.,O(n+m),O(n+m)
+ex_0161,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+7",6,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0162,dificil,dp,Calcula la distancia de edición entre dos cadenas.,Dos líneas con cadenas a y b.,El número mínimo de operaciones de edición.,1 <= longitud <= 5000,"casa
+caso",1,"import sys
+
+a = sys.stdin.readline().strip()
+b = sys.stdin.readline().strip()
+if not a and not b:
+    raise SystemExit
+n, m = len(a), len(b)
+dp = [[0]*(m+1) for _ in range(n+1)]
+for i in range(n+1):
+    dp[i][0] = i
+for j in range(m+1):
+    dp[0][j] = j
+for i in range(1, n+1):
+    for j in range(1, m+1):
+        cost = 0 if a[i-1] == b[j-1] else 1
+        dp[i][j] = min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost)
+print(dp[n][m])
+",DP clásico donde dp[i][j] es la distancia entre prefijos.,O(n*m),O(n*m)
+ex_0163,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+6",5,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0164,dificil,graph,Obtén un orden topológico de un grafo dirigido acíclico.,"n m, seguido de m aristas dirigidas (u v).",Un orden topológico válido o CICLO si no existe.,"1 <= n <= 200000
+1 <= m <= 300000","6 6
+1 2
+1 3
+3 4
+2 4
+4 5
+5 6",1 2 3 4 5 6,"import sys
+from collections import deque
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it); m = next(it)
+indeg = [0]*(n+1)
+g = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it)
+    g[u].append(v)
+    indeg[v] += 1
+q = deque([i for i in range(1, n+1) if indeg[i] == 0])
+order = []
+while q:
+    u = q.popleft()
+    order.append(u)
+    for v in g[u]:
+        indeg[v] -= 1
+        if indeg[v] == 0:
+            q.append(v)
+if len(order) != n:
+    print(""CICLO"")
+else:
+    print("" "".join(map(str, order)))
+",Kahn: se toman nodos con indegree 0 hasta completar el orden.,O(n+m),O(n+m)
+ex_0165,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+7",6,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0166,dificil,graph,Obtén un orden topológico de un grafo dirigido acíclico.,"n m, seguido de m aristas dirigidas (u v).",Un orden topológico válido o CICLO si no existe.,"1 <= n <= 200000
+1 <= m <= 300000","6 6
+1 2
+1 3
+3 4
+2 4
+4 5
+5 6",1 2 3 4 5 6,"import sys
+from collections import deque
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it); m = next(it)
+indeg = [0]*(n+1)
+g = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it)
+    g[u].append(v)
+    indeg[v] += 1
+q = deque([i for i in range(1, n+1) if indeg[i] == 0])
+order = []
+while q:
+    u = q.popleft()
+    order.append(u)
+    for v in g[u]:
+        indeg[v] -= 1
+        if indeg[v] == 0:
+            q.append(v)
+if len(order) != n:
+    print(""CICLO"")
+else:
+    print("" "".join(map(str, order)))
+",Kahn: se toman nodos con indegree 0 hasta completar el orden.,O(n+m),O(n+m)
+ex_0167,dificil,graph,Encuentra la distancia mínima entre dos nodos en un grafo ponderado no dirigido.,"n m, luego m aristas (u v w) y finalmente inicio y fin.","La distancia mínima, o -1 si no hay camino.","1 <= n <= 200000
+1 <= m <= 300000","5 6
+1 2 4
+1 3 2
+3 2 1
+2 4 7
+3 4 3
+4 5 1
+1 5",6,"import sys, heapq
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it)
+m = next(it)
+graph = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it); w = next(it)
+    graph[u].append((v, w))
+    graph[v].append((u, w))
+start = next(it); end = next(it)
+INF = 10**18
+dist = [INF]*(n+1)
+dist[start] = 0
+pq = [(0, start)]
+while pq:
+    d, u = heapq.heappop(pq)
+    if d != dist[u]:
+        continue
+    for v, w in graph[u]:
+        nd = d + w
+        if nd < dist[v]:
+            dist[v] = nd
+            heapq.heappush(pq, (nd, v))
+ans = dist[end] if dist[end] < INF else -1
+print(ans)
+",Dijkstra con cola de prioridad para obtener la distancia mínima.,O((n+m) log n),O(n+m)
+ex_0168,dificil,dp,Calcula la distancia de edición entre dos cadenas.,Dos líneas con cadenas a y b.,El número mínimo de operaciones de edición.,1 <= longitud <= 5000,"barco
+banco",1,"import sys
+
+a = sys.stdin.readline().strip()
+b = sys.stdin.readline().strip()
+if not a and not b:
+    raise SystemExit
+n, m = len(a), len(b)
+dp = [[0]*(m+1) for _ in range(n+1)]
+for i in range(n+1):
+    dp[i][0] = i
+for j in range(m+1):
+    dp[0][j] = j
+for i in range(1, n+1):
+    for j in range(1, m+1):
+        cost = 0 if a[i-1] == b[j-1] else 1
+        dp[i][j] = min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost)
+print(dp[n][m])
+",DP clásico donde dp[i][j] es la distancia entre prefijos.,O(n*m),O(n*m)
+ex_0169,dificil,dp,Calcula la distancia de edición entre dos cadenas.,Dos líneas con cadenas a y b.,El número mínimo de operaciones de edición.,1 <= longitud <= 5000,"gato
+gata",1,"import sys
+
+a = sys.stdin.readline().strip()
+b = sys.stdin.readline().strip()
+if not a and not b:
+    raise SystemExit
+n, m = len(a), len(b)
+dp = [[0]*(m+1) for _ in range(n+1)]
+for i in range(n+1):
+    dp[i][0] = i
+for j in range(m+1):
+    dp[0][j] = j
+for i in range(1, n+1):
+    for j in range(1, m+1):
+        cost = 0 if a[i-1] == b[j-1] else 1
+        dp[i][j] = min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost)
+print(dp[n][m])
+",DP clásico donde dp[i][j] es la distancia entre prefijos.,O(n*m),O(n*m)
+ex_0170,dificil,graph,Obtén un orden topológico de un grafo dirigido acíclico.,"n m, seguido de m aristas dirigidas (u v).",Un orden topológico válido o CICLO si no existe.,"1 <= n <= 200000
+1 <= m <= 300000","6 6
+1 2
+1 3
+3 4
+2 4
+4 5
+5 6",1 2 3 4 5 6,"import sys
+from collections import deque
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it); m = next(it)
+indeg = [0]*(n+1)
+g = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it)
+    g[u].append(v)
+    indeg[v] += 1
+q = deque([i for i in range(1, n+1) if indeg[i] == 0])
+order = []
+while q:
+    u = q.popleft()
+    order.append(u)
+    for v in g[u]:
+        indeg[v] -= 1
+        if indeg[v] == 0:
+            q.append(v)
+if len(order) != n:
+    print(""CICLO"")
+else:
+    print("" "".join(map(str, order)))
+",Kahn: se toman nodos con indegree 0 hasta completar el orden.,O(n+m),O(n+m)
+ex_0171,dificil,dp,Calcula la distancia de edición entre dos cadenas.,Dos líneas con cadenas a y b.,El número mínimo de operaciones de edición.,1 <= longitud <= 5000,"gato
+gata",1,"import sys
+
+a = sys.stdin.readline().strip()
+b = sys.stdin.readline().strip()
+if not a and not b:
+    raise SystemExit
+n, m = len(a), len(b)
+dp = [[0]*(m+1) for _ in range(n+1)]
+for i in range(n+1):
+    dp[i][0] = i
+for j in range(m+1):
+    dp[0][j] = j
+for i in range(1, n+1):
+    for j in range(1, m+1):
+        cost = 0 if a[i-1] == b[j-1] else 1
+        dp[i][j] = min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost)
+print(dp[n][m])
+",DP clásico donde dp[i][j] es la distancia entre prefijos.,O(n*m),O(n*m)
+ex_0172,dificil,graph,Obtén un orden topológico de un grafo dirigido acíclico.,"n m, seguido de m aristas dirigidas (u v).",Un orden topológico válido o CICLO si no existe.,"1 <= n <= 200000
+1 <= m <= 300000","6 6
+1 2
+1 3
+3 4
+2 4
+4 5
+5 6",1 2 3 4 5 6,"import sys
+from collections import deque
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it); m = next(it)
+indeg = [0]*(n+1)
+g = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it)
+    g[u].append(v)
+    indeg[v] += 1
+q = deque([i for i in range(1, n+1) if indeg[i] == 0])
+order = []
+while q:
+    u = q.popleft()
+    order.append(u)
+    for v in g[u]:
+        indeg[v] -= 1
+        if indeg[v] == 0:
+            q.append(v)
+if len(order) != n:
+    print(""CICLO"")
+else:
+    print("" "".join(map(str, order)))
+",Kahn: se toman nodos con indegree 0 hasta completar el orden.,O(n+m),O(n+m)
+ex_0173,dificil,graph,Obtén un orden topológico de un grafo dirigido acíclico.,"n m, seguido de m aristas dirigidas (u v).",Un orden topológico válido o CICLO si no existe.,"1 <= n <= 200000
+1 <= m <= 300000","6 6
+1 2
+1 3
+3 4
+2 4
+4 5
+5 6",1 2 3 4 5 6,"import sys
+from collections import deque
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it); m = next(it)
+indeg = [0]*(n+1)
+g = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it)
+    g[u].append(v)
+    indeg[v] += 1
+q = deque([i for i in range(1, n+1) if indeg[i] == 0])
+order = []
+while q:
+    u = q.popleft()
+    order.append(u)
+    for v in g[u]:
+        indeg[v] -= 1
+        if indeg[v] == 0:
+            q.append(v)
+if len(order) != n:
+    print(""CICLO"")
+else:
+    print("" "".join(map(str, order)))
+",Kahn: se toman nodos con indegree 0 hasta completar el orden.,O(n+m),O(n+m)
+ex_0174,dificil,graph,Encuentra la distancia mínima entre dos nodos en un grafo ponderado no dirigido.,"n m, luego m aristas (u v w) y finalmente inicio y fin.","La distancia mínima, o -1 si no hay camino.","1 <= n <= 200000
+1 <= m <= 300000","5 6
+1 2 4
+1 3 2
+3 2 1
+2 4 7
+3 4 3
+4 5 1
+1 5",6,"import sys, heapq
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it)
+m = next(it)
+graph = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it); w = next(it)
+    graph[u].append((v, w))
+    graph[v].append((u, w))
+start = next(it); end = next(it)
+INF = 10**18
+dist = [INF]*(n+1)
+dist[start] = 0
+pq = [(0, start)]
+while pq:
+    d, u = heapq.heappop(pq)
+    if d != dist[u]:
+        continue
+    for v, w in graph[u]:
+        nd = d + w
+        if nd < dist[v]:
+            dist[v] = nd
+            heapq.heappush(pq, (nd, v))
+ans = dist[end] if dist[end] < INF else -1
+print(ans)
+",Dijkstra con cola de prioridad para obtener la distancia mínima.,O((n+m) log n),O(n+m)
+ex_0175,dificil,graph,Encuentra la distancia mínima entre dos nodos en un grafo ponderado no dirigido.,"n m, luego m aristas (u v w) y finalmente inicio y fin.","La distancia mínima, o -1 si no hay camino.","1 <= n <= 200000
+1 <= m <= 300000","5 6
+1 2 4
+1 3 2
+3 2 1
+2 4 7
+3 4 3
+4 5 1
+1 5",6,"import sys, heapq
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it)
+m = next(it)
+graph = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it); w = next(it)
+    graph[u].append((v, w))
+    graph[v].append((u, w))
+start = next(it); end = next(it)
+INF = 10**18
+dist = [INF]*(n+1)
+dist[start] = 0
+pq = [(0, start)]
+while pq:
+    d, u = heapq.heappop(pq)
+    if d != dist[u]:
+        continue
+    for v, w in graph[u]:
+        nd = d + w
+        if nd < dist[v]:
+            dist[v] = nd
+            heapq.heappush(pq, (nd, v))
+ans = dist[end] if dist[end] < INF else -1
+print(ans)
+",Dijkstra con cola de prioridad para obtener la distancia mínima.,O((n+m) log n),O(n+m)
+ex_0176,dificil,graph,Obtén un orden topológico de un grafo dirigido acíclico.,"n m, seguido de m aristas dirigidas (u v).",Un orden topológico válido o CICLO si no existe.,"1 <= n <= 200000
+1 <= m <= 300000","6 6
+1 2
+1 3
+3 4
+2 4
+4 5
+5 6",1 2 3 4 5 6,"import sys
+from collections import deque
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it); m = next(it)
+indeg = [0]*(n+1)
+g = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it)
+    g[u].append(v)
+    indeg[v] += 1
+q = deque([i for i in range(1, n+1) if indeg[i] == 0])
+order = []
+while q:
+    u = q.popleft()
+    order.append(u)
+    for v in g[u]:
+        indeg[v] -= 1
+        if indeg[v] == 0:
+            q.append(v)
+if len(order) != n:
+    print(""CICLO"")
+else:
+    print("" "".join(map(str, order)))
+",Kahn: se toman nodos con indegree 0 hasta completar el orden.,O(n+m),O(n+m)
+ex_0177,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+7",6,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0178,dificil,graph,Encuentra la distancia mínima entre dos nodos en un grafo ponderado no dirigido.,"n m, luego m aristas (u v w) y finalmente inicio y fin.","La distancia mínima, o -1 si no hay camino.","1 <= n <= 200000
+1 <= m <= 300000","5 6
+1 2 4
+1 3 2
+3 2 1
+2 4 7
+3 4 3
+4 5 1
+1 5",6,"import sys, heapq
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it)
+m = next(it)
+graph = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it); w = next(it)
+    graph[u].append((v, w))
+    graph[v].append((u, w))
+start = next(it); end = next(it)
+INF = 10**18
+dist = [INF]*(n+1)
+dist[start] = 0
+pq = [(0, start)]
+while pq:
+    d, u = heapq.heappop(pq)
+    if d != dist[u]:
+        continue
+    for v, w in graph[u]:
+        nd = d + w
+        if nd < dist[v]:
+            dist[v] = nd
+            heapq.heappush(pq, (nd, v))
+ans = dist[end] if dist[end] < INF else -1
+print(ans)
+",Dijkstra con cola de prioridad para obtener la distancia mínima.,O((n+m) log n),O(n+m)
+ex_0179,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+6",5,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0180,dificil,graph,Obtén un orden topológico de un grafo dirigido acíclico.,"n m, seguido de m aristas dirigidas (u v).",Un orden topológico válido o CICLO si no existe.,"1 <= n <= 200000
+1 <= m <= 300000","6 6
+1 2
+1 3
+3 4
+2 4
+4 5
+5 6",1 2 3 4 5 6,"import sys
+from collections import deque
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it); m = next(it)
+indeg = [0]*(n+1)
+g = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it)
+    g[u].append(v)
+    indeg[v] += 1
+q = deque([i for i in range(1, n+1) if indeg[i] == 0])
+order = []
+while q:
+    u = q.popleft()
+    order.append(u)
+    for v in g[u]:
+        indeg[v] -= 1
+        if indeg[v] == 0:
+            q.append(v)
+if len(order) != n:
+    print(""CICLO"")
+else:
+    print("" "".join(map(str, order)))
+",Kahn: se toman nodos con indegree 0 hasta completar el orden.,O(n+m),O(n+m)
+ex_0181,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+6",5,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0182,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+5",4,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0183,dificil,graph,Obtén un orden topológico de un grafo dirigido acíclico.,"n m, seguido de m aristas dirigidas (u v).",Un orden topológico válido o CICLO si no existe.,"1 <= n <= 200000
+1 <= m <= 300000","6 6
+1 2
+1 3
+3 4
+2 4
+4 5
+5 6",1 2 3 4 5 6,"import sys
+from collections import deque
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it); m = next(it)
+indeg = [0]*(n+1)
+g = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it)
+    g[u].append(v)
+    indeg[v] += 1
+q = deque([i for i in range(1, n+1) if indeg[i] == 0])
+order = []
+while q:
+    u = q.popleft()
+    order.append(u)
+    for v in g[u]:
+        indeg[v] -= 1
+        if indeg[v] == 0:
+            q.append(v)
+if len(order) != n:
+    print(""CICLO"")
+else:
+    print("" "".join(map(str, order)))
+",Kahn: se toman nodos con indegree 0 hasta completar el orden.,O(n+m),O(n+m)
+ex_0184,dificil,graph,Encuentra la distancia mínima entre dos nodos en un grafo ponderado no dirigido.,"n m, luego m aristas (u v w) y finalmente inicio y fin.","La distancia mínima, o -1 si no hay camino.","1 <= n <= 200000
+1 <= m <= 300000","5 6
+1 2 4
+1 3 2
+3 2 1
+2 4 7
+3 4 3
+4 5 1
+1 5",6,"import sys, heapq
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it)
+m = next(it)
+graph = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it); w = next(it)
+    graph[u].append((v, w))
+    graph[v].append((u, w))
+start = next(it); end = next(it)
+INF = 10**18
+dist = [INF]*(n+1)
+dist[start] = 0
+pq = [(0, start)]
+while pq:
+    d, u = heapq.heappop(pq)
+    if d != dist[u]:
+        continue
+    for v, w in graph[u]:
+        nd = d + w
+        if nd < dist[v]:
+            dist[v] = nd
+            heapq.heappush(pq, (nd, v))
+ans = dist[end] if dist[end] < INF else -1
+print(ans)
+",Dijkstra con cola de prioridad para obtener la distancia mínima.,O((n+m) log n),O(n+m)
+ex_0185,dificil,graph,Encuentra la distancia mínima entre dos nodos en un grafo ponderado no dirigido.,"n m, luego m aristas (u v w) y finalmente inicio y fin.","La distancia mínima, o -1 si no hay camino.","1 <= n <= 200000
+1 <= m <= 300000","5 6
+1 2 4
+1 3 2
+3 2 1
+2 4 7
+3 4 3
+4 5 1
+1 5",6,"import sys, heapq
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it)
+m = next(it)
+graph = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it); w = next(it)
+    graph[u].append((v, w))
+    graph[v].append((u, w))
+start = next(it); end = next(it)
+INF = 10**18
+dist = [INF]*(n+1)
+dist[start] = 0
+pq = [(0, start)]
+while pq:
+    d, u = heapq.heappop(pq)
+    if d != dist[u]:
+        continue
+    for v, w in graph[u]:
+        nd = d + w
+        if nd < dist[v]:
+            dist[v] = nd
+            heapq.heappush(pq, (nd, v))
+ans = dist[end] if dist[end] < INF else -1
+print(ans)
+",Dijkstra con cola de prioridad para obtener la distancia mínima.,O((n+m) log n),O(n+m)
+ex_0186,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+5",4,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0187,dificil,graph,Obtén un orden topológico de un grafo dirigido acíclico.,"n m, seguido de m aristas dirigidas (u v).",Un orden topológico válido o CICLO si no existe.,"1 <= n <= 200000
+1 <= m <= 300000","6 6
+1 2
+1 3
+3 4
+2 4
+4 5
+5 6",1 2 3 4 5 6,"import sys
+from collections import deque
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it); m = next(it)
+indeg = [0]*(n+1)
+g = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it)
+    g[u].append(v)
+    indeg[v] += 1
+q = deque([i for i in range(1, n+1) if indeg[i] == 0])
+order = []
+while q:
+    u = q.popleft()
+    order.append(u)
+    for v in g[u]:
+        indeg[v] -= 1
+        if indeg[v] == 0:
+            q.append(v)
+if len(order) != n:
+    print(""CICLO"")
+else:
+    print("" "".join(map(str, order)))
+",Kahn: se toman nodos con indegree 0 hasta completar el orden.,O(n+m),O(n+m)
+ex_0188,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+5",4,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0189,dificil,graph,Obtén un orden topológico de un grafo dirigido acíclico.,"n m, seguido de m aristas dirigidas (u v).",Un orden topológico válido o CICLO si no existe.,"1 <= n <= 200000
+1 <= m <= 300000","6 6
+1 2
+1 3
+3 4
+2 4
+4 5
+5 6",1 2 3 4 5 6,"import sys
+from collections import deque
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it); m = next(it)
+indeg = [0]*(n+1)
+g = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it)
+    g[u].append(v)
+    indeg[v] += 1
+q = deque([i for i in range(1, n+1) if indeg[i] == 0])
+order = []
+while q:
+    u = q.popleft()
+    order.append(u)
+    for v in g[u]:
+        indeg[v] -= 1
+        if indeg[v] == 0:
+            q.append(v)
+if len(order) != n:
+    print(""CICLO"")
+else:
+    print("" "".join(map(str, order)))
+",Kahn: se toman nodos con indegree 0 hasta completar el orden.,O(n+m),O(n+m)
+ex_0190,dificil,graph,Encuentra la distancia mínima entre dos nodos en un grafo ponderado no dirigido.,"n m, luego m aristas (u v w) y finalmente inicio y fin.","La distancia mínima, o -1 si no hay camino.","1 <= n <= 200000
+1 <= m <= 300000","5 6
+1 2 4
+1 3 2
+3 2 1
+2 4 7
+3 4 3
+4 5 1
+1 5",6,"import sys, heapq
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it)
+m = next(it)
+graph = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it); w = next(it)
+    graph[u].append((v, w))
+    graph[v].append((u, w))
+start = next(it); end = next(it)
+INF = 10**18
+dist = [INF]*(n+1)
+dist[start] = 0
+pq = [(0, start)]
+while pq:
+    d, u = heapq.heappop(pq)
+    if d != dist[u]:
+        continue
+    for v, w in graph[u]:
+        nd = d + w
+        if nd < dist[v]:
+            dist[v] = nd
+            heapq.heappush(pq, (nd, v))
+ans = dist[end] if dist[end] < INF else -1
+print(ans)
+",Dijkstra con cola de prioridad para obtener la distancia mínima.,O((n+m) log n),O(n+m)
+ex_0191,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+5",4,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0192,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+7",6,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0193,dificil,dp,Calcula la distancia de edición entre dos cadenas.,Dos líneas con cadenas a y b.,El número mínimo de operaciones de edición.,1 <= longitud <= 5000,"casa
+caso",1,"import sys
+
+a = sys.stdin.readline().strip()
+b = sys.stdin.readline().strip()
+if not a and not b:
+    raise SystemExit
+n, m = len(a), len(b)
+dp = [[0]*(m+1) for _ in range(n+1)]
+for i in range(n+1):
+    dp[i][0] = i
+for j in range(m+1):
+    dp[0][j] = j
+for i in range(1, n+1):
+    for j in range(1, m+1):
+        cost = 0 if a[i-1] == b[j-1] else 1
+        dp[i][j] = min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost)
+print(dp[n][m])
+",DP clásico donde dp[i][j] es la distancia entre prefijos.,O(n*m),O(n*m)
+ex_0194,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+7",6,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0195,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+5",4,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0196,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+6",5,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0197,dificil,dp,Calcula la distancia de edición entre dos cadenas.,Dos líneas con cadenas a y b.,El número mínimo de operaciones de edición.,1 <= longitud <= 5000,"gato
+gata",1,"import sys
+
+a = sys.stdin.readline().strip()
+b = sys.stdin.readline().strip()
+if not a and not b:
+    raise SystemExit
+n, m = len(a), len(b)
+dp = [[0]*(m+1) for _ in range(n+1)]
+for i in range(n+1):
+    dp[i][0] = i
+for j in range(m+1):
+    dp[0][j] = j
+for i in range(1, n+1):
+    for j in range(1, m+1):
+        cost = 0 if a[i-1] == b[j-1] else 1
+        dp[i][j] = min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost)
+print(dp[n][m])
+",DP clásico donde dp[i][j] es la distancia entre prefijos.,O(n*m),O(n*m)
+ex_0198,dificil,dp,Calcula la distancia de edición entre dos cadenas.,Dos líneas con cadenas a y b.,El número mínimo de operaciones de edición.,1 <= longitud <= 5000,"barco
+banco",1,"import sys
+
+a = sys.stdin.readline().strip()
+b = sys.stdin.readline().strip()
+if not a and not b:
+    raise SystemExit
+n, m = len(a), len(b)
+dp = [[0]*(m+1) for _ in range(n+1)]
+for i in range(n+1):
+    dp[i][0] = i
+for j in range(m+1):
+    dp[0][j] = j
+for i in range(1, n+1):
+    for j in range(1, m+1):
+        cost = 0 if a[i-1] == b[j-1] else 1
+        dp[i][j] = min(dp[i-1][j]+1, dp[i][j-1]+1, dp[i-1][j-1]+cost)
+print(dp[n][m])
+",DP clásico donde dp[i][j] es la distancia entre prefijos.,O(n*m),O(n*m)
+ex_0199,dificil,dp,Cuenta de cuántas formas se puede formar una cantidad con monedas dadas.,"m, luego m valores de monedas y finalmente la cantidad objetivo.",Número de formas distintas de formar la cantidad.,"1 <= m <= 100
+1 <= objetivo <= 10000","3
+1 2 5
+7",6,"import sys
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+m = data[0]
+coins = data[1:1+m]
+amount = data[1+m]
+ways = [0]*(amount+1)
+ways[0] = 1
+for c in coins:
+    for v in range(c, amount+1):
+        ways[v] += ways[v-c]
+print(ways[amount])
+",DP de conteo: ways[v] acumula las formas de llegar a v.,O(m*objetivo),O(objetivo)
+ex_0200,dificil,graph,Obtén un orden topológico de un grafo dirigido acíclico.,"n m, seguido de m aristas dirigidas (u v).",Un orden topológico válido o CICLO si no existe.,"1 <= n <= 200000
+1 <= m <= 300000","6 6
+1 2
+1 3
+3 4
+2 4
+4 5
+5 6",1 2 3 4 5 6,"import sys
+from collections import deque
+
+data = list(map(int, sys.stdin.read().split()))
+if not data:
+    raise SystemExit
+it = iter(data)
+n = next(it); m = next(it)
+indeg = [0]*(n+1)
+g = [[] for _ in range(n+1)]
+for _ in range(m):
+    u = next(it); v = next(it)
+    g[u].append(v)
+    indeg[v] += 1
+q = deque([i for i in range(1, n+1) if indeg[i] == 0])
+order = []
+while q:
+    u = q.popleft()
+    order.append(u)
+    for v in g[u]:
+        indeg[v] -= 1
+        if indeg[v] == 0:
+            q.append(v)
+if len(order) != n:
+    print(""CICLO"")
+else:
+    print("" "".join(map(str, order)))
+",Kahn: se toman nodos con indegree 0 hasta completar el orden.,O(n+m),O(n+m)
